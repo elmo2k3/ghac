@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 	GtkWidget *widget;
 
 	gtk_init(&argc, &argv);
-	xml = glade_xml_new("glade_test/test.glade", NULL, NULL);
+	xml = glade_xml_new("glade/ghac.glade", NULL, NULL);
 
 
 	widget = glade_xml_get_widget(xml, "window1");
