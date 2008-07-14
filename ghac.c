@@ -3,7 +3,7 @@
 #include <glade/glade.h>
 #include <glib/gprintf.h>
 
-#include "main.h"
+#include "ghac.h"
 #include <libhac.h>
 	
 GladeXML *xml;
@@ -12,6 +12,7 @@ GtkAdjustment *adjusts_rgb[3];
 
 gint exit_handler(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
+//	closeLibHac();
 	return FALSE; // darf beenden
 }
 
@@ -35,22 +36,40 @@ void on_button_send_clicked(GtkWidget *widget)
 		    );
 
 }
+GtkWidget *widget;
+
+void trayIconClicked(GtkWidget *foo, gpointer data)
+{
+	if(GTK_WIDGET_VISIBLE(widget))
+		gtk_widget_hide(GTK_WIDGET(widget));
+	else
+		gtk_widget_show_all(GTK_WIDGET(widget));
+}
+
+void trayIconPopup(GtkStatusIcon *status_icon, guint button, guint32 activate_time, gpointer popUpMenu)
+{
+	gtk_menu_popup(GTK_MENU(popUpMenu), NULL, NULL, gtk_status_icon_position_menu, status_icon, button, activate_time);
+}
 
 
 int main(int argc, char *argv[])
 {
-	GtkWidget *widget;
+	GtkStatusIcon *trayIcon;
+	GtkWidget *errorPopup;
 
 	gint red, green, blue;
 	gint smoothness;
 
 	gchar smoothness_buf[2];
 
-	gtk_init(&argc, &argv);
-	xml = glade_xml_new("/home/bjoern/Projekte_git/home-automation/ghac/glade/ghac.glade", NULL, NULL);
 
-	
-	widget = glade_xml_get_widget(xml, "window1");
+	gtk_init(&argc, &argv);
+
+	xml = glade_xml_new("/home/bjoern/Projekte_git/home-automation/ghac/glade/ghac.glade", NULL, NULL);
+	trayIcon = gtk_status_icon_new_from_file("/usr/share/icons/crystalsvg/64x64/apps/colors.png");
+
+	widget = glade_xml_get_widget(xml, "mainWindow");
+	errorPopup = glade_xml_get_widget(xml,"errorDialog");
 
 	glade_xml_signal_autoconnect(xml);
 
@@ -59,6 +78,18 @@ int main(int argc, char *argv[])
 
 	g_signal_connect(widget, "destroy",
 			G_CALLBACK(ghac_end), NULL);
+	
+	g_signal_connect(trayIcon, "activate", 
+			G_CALLBACK(trayIconClicked), NULL);
+
+//	if(initLibHac(HAD_HOST) < 0)
+//	{
+//		gtk_widget_show_all(GTK_WIDGET(errorPopup));
+//		gtk_main();
+//	}
+
+	gtk_status_icon_set_visible(trayIcon, TRUE);
+
 
 
 	getRgbValues(&red, &green, &blue, &smoothness);
@@ -69,7 +100,6 @@ int main(int argc, char *argv[])
 	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness")),smoothness_buf);
 
 	gtk_widget_show_all(GTK_WIDGET(widget));
-
 	gtk_main();
 
 	return 0;
