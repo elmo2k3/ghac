@@ -1,14 +1,26 @@
 #include <stdlib.h>
+#include <unistd.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
 #include <glib/gprintf.h>
+#include <pthread.h>
+#include <time.h>
 
 #include "ghac.h"
-#include <libhac.h>
+#include "graph_view.h"
+#include <libhac/libhac.h>
+#include <libhagraph/libhagraph.h>
 	
+pthread_t update_thread;
+
 GladeXML *xml;
 
 GtkAdjustment *adjusts_rgb[3];
+
+static uint8_t relaisState;
+	
+GtkWidget *errorPopup;
+GtkWidget *widget;
 
 gint exit_handler(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
@@ -19,6 +31,191 @@ gint exit_handler(GtkWidget *widget, GdkEvent *event, gpointer data)
 void ghac_end(GtkWidget *widget, gpointer daten)
 {
 	gtk_main_quit();
+}
+
+void updateTemperatures()
+{
+	float temperature_outside,
+	      temperature_wohnzimmer;
+
+	gchar label_buffer[20];
+	
+	
+	if(getTemperature(3,1,&temperature_outside) < 0)
+	{
+		gtk_widget_show_all(GTK_WIDGET(errorPopup));
+	}
+	if(getTemperature(3,0, &temperature_wohnzimmer) < 0)
+	{
+		gtk_widget_show_all(GTK_WIDGET(errorPopup));
+	}
+
+	sprintf(label_buffer,"%3.2f°C", temperature_outside);
+	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_outside")), label_buffer);
+	sprintf(label_buffer,"%3.2f°C", temperature_wohnzimmer);
+	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_wohnzimmer")), label_buffer);
+}
+
+void updateRelais()
+{
+
+	if(getRelaisState((uint8_t*)&relaisState) < 0)
+	{
+		gtk_widget_show_all(GTK_WIDGET(errorPopup));
+		gtk_main();
+	}
+
+	if(relaisState & 1)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton1")), 1);
+	if(relaisState & 2)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton2")), 1);
+	if(relaisState & 4)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton3")), 1);
+	if(relaisState & 8)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton4")), 1);
+	if(relaisState & 16)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton5")), 1);
+	if(relaisState & 32)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton6")), 1);
+
+}
+
+void updateGraph()
+{
+	int modul[6], sensor[6], numGraphs=0;
+
+	gchar *time_from,
+	      *time_to;
+
+	const char *tmpfilename = "tempgraph.png";
+
+	if(graph_bo_out)
+	{
+		modul[numGraphs] = 3;
+		sensor[numGraphs] = 1;
+		numGraphs++;
+	}
+	if(graph_bo_wohn)
+	{
+		modul[numGraphs] = 3;
+		sensor[numGraphs] = 0;
+		numGraphs++;
+	}
+	if(graph_oe_out)
+	{
+		modul[numGraphs] = 4;
+		sensor[numGraphs] = 0;
+		numGraphs++;
+	}
+	if(graph_oe_vor)
+	{
+		modul[numGraphs] = 2;
+		sensor[numGraphs] = 0;
+		numGraphs++;
+	}
+	if(graph_oe_rueck)
+	{
+		modul[numGraphs] = 2;
+		sensor[numGraphs] = 1;
+		numGraphs++;
+	}
+
+	time_from = gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_from")));
+	time_to= gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_to")));
+
+	createGraph(tmpfilename, 800, 400, time_from, time_to, (int*)&modul, (int*)&sensor, numGraphs);
+	
+	gtk_image_set_from_file(GTK_IMAGE(glade_xml_get_widget(xml,"image_graph")), tmpfilename);
+	
+	unlink(tmpfilename);
+
+}
+
+void on_button_draw_clicked(GtkButton *button)
+{
+	updateGraph();
+}
+
+static gboolean updateRgb()
+{
+	gint red, green, blue;
+	gint smoothness;
+
+	gchar smoothness_buf[2];
+
+	if((getRgbValues(&red, &green, &blue, &smoothness) < 0))
+	{
+		gtk_widget_show_all(GTK_WIDGET(errorPopup));
+		gtk_main();
+	}
+	g_sprintf(smoothness_buf,"%d",smoothness);
+	gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red")),red);
+	gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_green")),green);
+	gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_blue")),blue);
+	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness")),smoothness_buf);
+	
+	return TRUE;
+}
+
+
+void on_relaisbutton1_toggled(GtkToggleButton *toggle_button)
+{
+	if(gtk_toggle_button_get_active(toggle_button))
+		relaisState |= 1;
+	else
+		relaisState &= ~1;
+
+	setRelais(relaisState);
+}
+
+void on_relaisbutton2_toggled(GtkToggleButton *toggle_button)
+{
+	if(gtk_toggle_button_get_active(toggle_button))
+		relaisState |= 2;
+	else
+		relaisState &= ~2;
+
+	setRelais(relaisState);
+}
+
+void on_relaisbutton3_toggled(GtkToggleButton *toggle_button)
+{
+	if(gtk_toggle_button_get_active(toggle_button))
+		relaisState |= 4;
+	else
+		relaisState &= ~4;
+
+	setRelais(relaisState);
+}
+
+void on_relaisbutton4_toggled(GtkToggleButton *toggle_button)
+{
+	if(gtk_toggle_button_get_active(toggle_button))
+		relaisState |= 8;
+	else
+		relaisState &= ~8;
+
+	setRelais(relaisState);
+}
+
+void on_relaisbutton5_toggled(GtkToggleButton *toggle_button)
+{
+	if(gtk_toggle_button_get_active(toggle_button))
+		relaisState |= 16;
+	else
+		relaisState &= ~16;
+
+	setRelais(relaisState);
+}
+
+void on_relaisbutton6_toggled(GtkToggleButton *toggle_button)
+{
+	if(gtk_toggle_button_get_active(toggle_button))
+		relaisState |= 32;
+	else
+		relaisState &= ~32;
+
+	setRelais(relaisState);
 }
 
 void on_button_send_clicked(GtkWidget *widget)
@@ -36,7 +233,17 @@ void on_button_send_clicked(GtkWidget *widget)
 		    );
 
 }
-GtkWidget *widget;
+
+void updater()
+{
+	while(1)
+	{
+		updateRgb();
+		updateRelais();
+		updateTemperatures();
+		sleep(10);
+	}
+}
 
 void trayIconClicked(GtkWidget *foo, gpointer data)
 {
@@ -55,23 +262,30 @@ void trayIconPopup(GtkStatusIcon *status_icon, guint button, guint32 activate_ti
 int main(int argc, char *argv[])
 {
 	GtkStatusIcon *trayIcon;
-	GtkWidget *errorPopup;
+	time_t rawtime;
+	struct tm *today;
 
-	gint red, green, blue;
-	gint smoothness;
+	gchar time_from[11], time_to[11];
 
-	gchar smoothness_buf[2];
-
+	graph_bo_out = 1;
+	graph_bo_wohn = 1;
+	
+	
+	time(&rawtime);
+	today = gmtime(&rawtime);
+	strftime (time_from,255,"%Y-%m-%d",today);
+	rawtime += SECONDS_PER_DAY; // jetzt ist morgen heute
+	today = gmtime(&rawtime);
+	strftime (time_to,255,"%Y-%m-%d",today);
 
 	gtk_init(&argc, &argv);
 
-	xml = glade_xml_new("/home/bjoern/Projekte_git/home-automation/ghac/glade/ghac.glade", NULL, NULL);
+	xml = glade_xml_new("/home/bjoern/Projekte/home-automation/ghac/glade/ghac.glade", NULL, NULL);
 	trayIcon = gtk_status_icon_new_from_file("/usr/share/icons/crystalsvg/64x64/apps/colors.png");
 
 	widget = glade_xml_get_widget(xml, "mainWindow");
 	errorPopup = glade_xml_get_widget(xml,"errorDialog");
-
-	glade_xml_signal_autoconnect(xml);
+	
 
 	g_signal_connect(widget, "delete-event",
 			G_CALLBACK(exit_handler), NULL);
@@ -82,24 +296,21 @@ int main(int argc, char *argv[])
 	g_signal_connect(trayIcon, "activate", 
 			G_CALLBACK(trayIconClicked), NULL);
 
-//	if(initLibHac(HAD_HOST) < 0)
-//	{
-//		gtk_widget_show_all(GTK_WIDGET(errorPopup));
-//		gtk_main();
-//	}
-
+	
 	gtk_status_icon_set_visible(trayIcon, TRUE);
 
+	glade_xml_signal_autoconnect(xml);
 
+	
+	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_from")),time_from);
+	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_to")),time_to);
 
-	getRgbValues(&red, &green, &blue, &smoothness);
-	g_sprintf(smoothness_buf,"%d",smoothness);
-	gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red")),red);
-	gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_green")),green);
-	gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_blue")),blue);
-	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness")),smoothness_buf);
 
 	gtk_widget_show_all(GTK_WIDGET(widget));
+
+	pthread_create(&update_thread, NULL, (void*)&updater, NULL);
+
+	updateGraph();
 	gtk_main();
 
 	return 0;
