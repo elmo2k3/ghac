@@ -62,7 +62,7 @@ void updateRelais()
 	if(getRelaisState((uint8_t*)&relaisState) < 0)
 	{
 		gtk_widget_show_all(GTK_WIDGET(errorPopup));
-		gtk_main();
+//		gtk_main();
 	}
 
 	if(relaisState & 1)
@@ -146,7 +146,7 @@ static gboolean updateRgb()
 	if((getRgbValues(&red, &green, &blue, &smoothness) < 0))
 	{
 		gtk_widget_show_all(GTK_WIDGET(errorPopup));
-		gtk_main();
+//		gtk_main();
 	}
 	g_sprintf(smoothness_buf,"%d",smoothness);
 	gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red")),red);
@@ -236,12 +236,22 @@ void on_button_send_clicked(GtkWidget *widget)
 
 void updater()
 {
+	static int counter=60;
+
 	while(1)
 	{
 		updateRgb();
+		sleep(1);
 		updateRelais();
-		updateTemperatures();
-		sleep(10);
+		sleep(1);
+		//updateTemperatures();
+		sleep(1);
+		if(counter++ == 60)
+		{
+			updateGraph();
+			counter=0;
+		}
+		sleep(7);
 	}
 }
 
@@ -310,7 +320,6 @@ int main(int argc, char *argv[])
 
 	pthread_create(&update_thread, NULL, (void*)&updater, NULL);
 
-	updateGraph();
 	gtk_main();
 
 	return 0;
