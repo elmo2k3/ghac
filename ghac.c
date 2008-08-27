@@ -11,7 +11,7 @@
 #include <libhac/libhac.h>
 #include <libhagraph/libhagraph.h>
 	
-pthread_t update_thread;
+pthread_t update_thread, network_thread;
 
 GladeXML *xml;
 
@@ -30,6 +30,7 @@ gint exit_handler(GtkWidget *widget, GdkEvent *event, gpointer data)
 
 void ghac_end(GtkWidget *widget, gpointer daten)
 {
+	closeLibHac();
 	gtk_main_quit();
 }
 
@@ -55,6 +56,17 @@ void updateTemperatures()
 	sprintf(label_buffer,"%3.2f°C", temperature_wohnzimmer);
 	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_wohnzimmer")), label_buffer);
 }
+
+void updateVoltage()
+{
+	float voltage;
+	gchar label_buffer[20];
+
+	getVoltage(3,&voltage);
+	sprintf(label_buffer,"%3.2fV",voltage);
+	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_voltage")), label_buffer);
+}
+	
 
 void updateRelais()
 {
@@ -236,22 +248,20 @@ void on_button_send_clicked(GtkWidget *widget)
 
 void updater()
 {
-	static int counter=60;
+	static int counter=600;
 
 	while(1)
 	{
 		updateRgb();
-		sleep(1);
 		updateRelais();
-		sleep(1);
-		//updateTemperatures();
-		sleep(1);
-		if(counter++ == 60)
+		updateTemperatures();
+		updateVoltage();
+		if(counter++ == 600)
 		{
 			updateGraph();
 			counter=0;
 		}
-		sleep(7);
+		sleep(1);
 	}
 }
 
@@ -287,6 +297,8 @@ int main(int argc, char *argv[])
 	rawtime += SECONDS_PER_DAY; // jetzt ist morgen heute
 	today = gmtime(&rawtime);
 	strftime (time_to,255,"%Y-%m-%d",today);
+	
+	initLibHac("192.168.0.2");
 
 	gtk_init(&argc, &argv);
 
