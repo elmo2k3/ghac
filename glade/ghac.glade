@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Thu Aug 28 01:32:54 2008 -->
+<!--Generated with glade3 3.4.5 on Tue Sep 23 21:39:14 2008 -->
 <glade-interface>
   <widget class="GtkDialog" id="errorDialog">
     <property name="border_width">5</property>
@@ -117,6 +117,95 @@
                           </widget>
                         </child>
                         <child>
+                          <widget class="GtkHBox" id="hbox1">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkVScale" id="vscale_red1">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="adjustment">0 0 260 1 5 5</property>
+                                <property name="inverted">True</property>
+                                <property name="digits">0</property>
+                                <signal name="button_release_event" handler="on_button_send_clicked"/>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkVScale" id="vscale_green1">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="adjustment">0 0 260 1 5 5</property>
+                                <property name="inverted">True</property>
+                                <property name="digits">0</property>
+                                <signal name="button_release_event" handler="on_button_send_clicked"/>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkVScale" id="vscale_blue1">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="adjustment">0 0 260 1 5 5</property>
+                                <property name="inverted">True</property>
+                                <property name="digits">0</property>
+                                <signal name="button_release_event" handler="on_button_send_clicked"/>
+                              </widget>
+                              <packing>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="padding">18</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkHBox" id="hbox7">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkVScale" id="vscale_red2">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="adjustment">0 0 260 1 5 5</property>
+                                <property name="inverted">True</property>
+                                <property name="digits">0</property>
+                                <signal name="button_release_event" handler="on_button_send_clicked"/>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkVScale" id="vscale_green2">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="adjustment">0 0 260 1 5 5</property>
+                                <property name="inverted">True</property>
+                                <property name="digits">0</property>
+                                <signal name="button_release_event" handler="on_button_send_clicked"/>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkVScale" id="vscale_blue2">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="adjustment">0 0 260 1 5 5</property>
+                                <property name="inverted">True</property>
+                                <property name="digits">0</property>
+                                <signal name="button_release_event" handler="on_button_send_clicked"/>
+                              </widget>
+                              <packing>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                        <child>
                           <widget class="GtkVBox" id="vbox3">
                             <property name="visible">True</property>
                             <child>
@@ -150,7 +239,7 @@
                             </child>
                           </widget>
                           <packing>
-                            <property name="position">1</property>
+                            <property name="position">3</property>
                           </packing>
                         </child>
                       </widget>

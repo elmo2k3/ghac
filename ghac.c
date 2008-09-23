@@ -79,16 +79,28 @@ void updateRelais()
 
 	if(relaisState & 1)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton1")), 1);
+	else
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton1")), 0);
 	if(relaisState & 2)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton2")), 1);
+	else
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton2")), 0);
 	if(relaisState & 4)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton3")), 1);
+	else
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton3")), 0);
 	if(relaisState & 8)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton4")), 1);
+	else
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton4")), 0);
 	if(relaisState & 16)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton5")), 1);
+	else
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton5")), 0);
 	if(relaisState & 32)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton6")), 1);
+	else
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton6")), 0);
 
 }
 
@@ -238,9 +250,19 @@ void on_button_send_clicked(GtkWidget *widget)
 	rgb_modul = 3;
 	smoothness = 5;
 
-	setRgbValues( (int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red"))),
+	setRgbValueModul(1, (int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red"))),
 			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_green"))),
 			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_blue"))),
+			atoi(gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness"))))
+		    );
+	setRgbValueModul(3, (int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red1"))),
+			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_green1"))),
+			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_blue1"))),
+			atoi(gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness"))))
+		    );
+	setRgbValueModul(4, (int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red2"))),
+			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_green2"))),
+			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_blue2"))),
 			atoi(gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness"))))
 		    );
 
@@ -252,7 +274,7 @@ void updater()
 
 	while(1)
 	{
-		updateRgb();
+		//updateRgb();
 		updateRelais();
 		updateTemperatures();
 		updateVoltage();
@@ -261,7 +283,7 @@ void updater()
 			updateGraph();
 			counter=0;
 		}
-		sleep(1);
+		sleep(10);
 	}
 }
 
