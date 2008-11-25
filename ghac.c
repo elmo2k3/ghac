@@ -147,9 +147,8 @@ void updateGraph()
 	time_from = gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_from")));
 	time_to= gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_to")));
 
-	createGraph(tmpfilename, 800, 400, time_from, time_to, (int*)&modul, (int*)&sensor, numGraphs);
-	
-	gtk_image_set_from_file(GTK_IMAGE(glade_xml_get_widget(xml,"image_graph")), tmpfilename);
+	if(createGraph(tmpfilename, 800, 400, time_from, time_to, (int*)&modul, (int*)&sensor, numGraphs))
+		gtk_image_set_from_file(GTK_IMAGE(glade_xml_get_widget(xml,"image_graph")), tmpfilename);
 	
 	unlink(tmpfilename);
 
@@ -162,23 +161,27 @@ void on_button_draw_clicked(GtkButton *button)
 
 static gboolean updateRgb()
 {
-	gint red, green, blue;
-	gint smoothness;
-
+	int i;
 	gchar smoothness_buf[2];
+	gchar slider_name[64];
 
-	if((getRgbValues(&red, &green, &blue, &smoothness) < 0))
-	{
-		gtk_widget_show_all(GTK_WIDGET(errorPopup));
-//		gtk_main();
-	}
-	g_sprintf(smoothness_buf,"%d",smoothness);
-	gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red")),red);
-	gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_green")),green);
-	gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_blue")),blue);
-	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness")),smoothness_buf);
+	struct _hadState hadState;
+
+	getHadState(&hadState);
 	
-	return TRUE;
+	for(i=0;i<3;i++)
+	{
+		g_sprintf(smoothness_buf,"%d",hadState.rgbModuleValues[i].smoothness);
+		g_sprintf(slider_name,"vscale_red%d",i);
+		gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,slider_name)),hadState.rgbModuleValues[i].red);
+		g_sprintf(slider_name,"vscale_green%d",i);
+		gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,slider_name)),hadState.rgbModuleValues[i].green);
+		g_sprintf(slider_name,"vscale_blue%d",i);
+		gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,slider_name)),hadState.rgbModuleValues[i].blue);
+		gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness")),smoothness_buf);
+	}
+	
+	return 1;
 }
 
 
@@ -250,17 +253,17 @@ void on_button_send_clicked(GtkWidget *widget)
 	rgb_modul = 3;
 	smoothness = 5;
 
-	setRgbValueModul(1, (int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red"))),
-			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_green"))),
-			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_blue"))),
+	setRgbValueModul(0x10, (int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red0"))),
+			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_green0"))),
+			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_blue0"))),
 			atoi(gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness"))))
 		    );
-	setRgbValueModul(3, (int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red1"))),
+	setRgbValueModul(0x11, (int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red1"))),
 			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_green1"))),
 			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_blue1"))),
 			atoi(gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness"))))
 		    );
-	setRgbValueModul(4, (int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red2"))),
+	setRgbValueModul(0x12, (int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red2"))),
 			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_green2"))),
 			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_blue2"))),
 			atoi(gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness"))))
@@ -274,7 +277,7 @@ void updater()
 
 	while(1)
 	{
-		//updateRgb();
+		updateRgb();
 		updateRelais();
 		updateTemperatures();
 		updateVoltage();
@@ -307,6 +310,11 @@ int main(int argc, char *argv[])
 	time_t rawtime;
 	struct tm *today;
 
+	char *server_ip = getenv("HAD_HOST");
+
+	if(!server_ip)
+		server_ip = HAD_HOST;
+
 	gchar time_from[11], time_to[11];
 
 	graph_bo_out = 1;
@@ -320,12 +328,13 @@ int main(int argc, char *argv[])
 	today = gmtime(&rawtime);
 	strftime (time_to,255,"%Y-%m-%d",today);
 	
-	initLibHac("192.168.0.2");
+	initLibHac(server_ip);
+//	initLibHac("127.0.0.1");
 
 	gtk_init(&argc, &argv);
 
 	xml = glade_xml_new("/home/bjoern/Projekte/home-automation/ghac/glade/ghac.glade", NULL, NULL);
-	trayIcon = gtk_status_icon_new_from_file("/usr/share/icons/crystalsvg/64x64/apps/colors.png");
+	trayIcon = gtk_status_icon_new_from_file("/usr/share/pixmaps/gnome-color-browser.png");
 
 	widget = glade_xml_get_widget(xml, "mainWindow");
 	errorPopup = glade_xml_get_widget(xml,"errorDialog");

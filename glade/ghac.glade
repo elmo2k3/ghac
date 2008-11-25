@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Tue Sep 23 21:39:14 2008 -->
+<!--*- mode: xml -*-->
 <glade-interface>
   <widget class="GtkDialog" id="errorDialog">
     <property name="border_width">5</property>
@@ -31,8 +31,8 @@
               <widget class="GtkButton" id="button_exit">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
                 <property name="label" translatable="yes">Exit</property>
+                <property name="use_underline">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="ghac_end"/>
               </widget>
@@ -60,7 +60,6 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="tab_pos">GTK_POS_LEFT</property>
-        <property name="tab_vborder">1</property>
         <child>
           <widget class="GtkHBox" id="hbox4">
             <property name="visible">True</property>
@@ -79,7 +78,7 @@
                           <widget class="GtkHBox" id="hbox5">
                             <property name="visible">True</property>
                             <child>
-                              <widget class="GtkVScale" id="vscale_red">
+                              <widget class="GtkVScale" id="vscale_red0">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">0 0 260 1 5 5</property>
@@ -89,7 +88,7 @@
                               </widget>
                             </child>
                             <child>
-                              <widget class="GtkVScale" id="vscale_green">
+                              <widget class="GtkVScale" id="vscale_green0">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">0 0 260 1 5 5</property>
@@ -102,7 +101,7 @@
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkVScale" id="vscale_blue">
+                              <widget class="GtkVScale" id="vscale_blue0">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">0 0 260 1 5 5</property>
@@ -275,15 +274,41 @@
                         <property name="n_rows">3</property>
                         <property name="n_columns">2</property>
                         <child>
-                          <widget class="GtkLabel" id="label_wohnzimmer">
+                          <widget class="GtkLabel" id="label_voltage">
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">label</property>
                           </widget>
                           <packing>
                             <property name="left_attach">1</property>
                             <property name="right_attach">2</property>
-                            <property name="top_attach">1</property>
-                            <property name="bottom_attach">2</property>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label13">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Spannung</property>
+                          </widget>
+                          <packing>
+                            <property name="top_attach">2</property>
+                            <property name="bottom_attach">3</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label4">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Draussen</property>
+                          </widget>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label_outside">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">label</property>
+                          </widget>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="right_attach">2</property>
                           </packing>
                         </child>
                         <child>
@@ -297,41 +322,15 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkLabel" id="label_outside">
+                          <widget class="GtkLabel" id="label_wohnzimmer">
                             <property name="visible">True</property>
                             <property name="label" translatable="yes">label</property>
                           </widget>
                           <packing>
                             <property name="left_attach">1</property>
                             <property name="right_attach">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkLabel" id="label4">
-                            <property name="visible">True</property>
-                            <property name="label" translatable="yes">Draussen</property>
-                          </widget>
-                        </child>
-                        <child>
-                          <widget class="GtkLabel" id="label13">
-                            <property name="visible">True</property>
-                            <property name="label" translatable="yes">Spannung</property>
-                          </widget>
-                          <packing>
-                            <property name="top_attach">2</property>
-                            <property name="bottom_attach">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkLabel" id="label_voltage">
-                            <property name="visible">True</property>
-                            <property name="label" translatable="yes">label</property>
-                          </widget>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">2</property>
-                            <property name="bottom_attach">3</property>
+                            <property name="top_attach">1</property>
+                            <property name="bottom_attach">2</property>
                           </packing>
                         </child>
                       </widget>
@@ -369,6 +368,8 @@
                           <widget class="GtkCheckButton" id="relaisbutton1">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="label" translatable="yes">Laserdrucker</property>
+                            <property name="use_underline">True</property>
                             <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_relaisbutton1_toggled"/>
@@ -381,6 +382,9 @@
                             <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_relaisbutton2_toggled"/>
+                            <child>
+                              <placeholder/>
+                            </child>
                           </widget>
                           <packing>
                             <property name="position">1</property>
@@ -391,6 +395,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="label" translatable="yes">Hifi - Anlage</property>
+                            <property name="use_underline">True</property>
                             <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_relaisbutton3_toggled"/>
@@ -406,6 +411,9 @@
                             <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_relaisbutton4_toggled"/>
+                            <child>
+                              <placeholder/>
+                            </child>
                           </widget>
                           <packing>
                             <property name="position">3</property>
@@ -416,6 +424,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="label" translatable="yes">MP3-Festplatte</property>
+                            <property name="use_underline">True</property>
                             <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_relaisbutton5_toggled"/>
@@ -428,6 +437,8 @@
                           <widget class="GtkCheckButton" id="relaisbutton6">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="label" translatable="yes">Taglicht Schlafzimmer</property>
+                            <property name="use_underline">True</property>
                             <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_relaisbutton6_toggled"/>
@@ -482,6 +493,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Bochum draussen</property>
+                        <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
@@ -493,6 +505,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Bochum Wohnzimmer</property>
+                        <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
@@ -507,6 +520,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">O.-E. draussen</property>
+                        <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_checkbutton_oe_out_toggled"/>
@@ -525,6 +539,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">O.-E. Wohnzimmer</property>
+                        <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_checkbutton_oe_wohn_toggled"/>
@@ -535,6 +550,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">O.-E. Vorlauf</property>
+                        <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_checkbutton_oe_vor_toggled"/>
@@ -548,6 +564,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">O.-E. Rücklauf</property>
+                        <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <property name="draw_indicator">True</property>
                         <signal name="toggled" handler="on_checkbutton_oe_rueck_toggled"/>
@@ -621,8 +638,8 @@
                       <widget class="GtkButton" id="button_draw">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
                         <property name="label" translatable="yes">zeichnen</property>
+                        <property name="use_underline">True</property>
                         <property name="response_id">0</property>
                         <signal name="clicked" handler="on_button_draw_clicked"/>
                       </widget>
@@ -668,27 +685,78 @@
           <placeholder/>
         </child>
         <child>
-          <placeholder/>
+          <widget class="GtkLabel" id="label14">
+            <property name="visible">True</property>
+          </widget>
           <packing>
             <property name="type">tab</property>
+            <property name="position">2</property>
+            <property name="tab_fill">False</property>
           </packing>
         </child>
         <child>
           <placeholder/>
         </child>
         <child>
-          <placeholder/>
+          <widget class="GtkLabel" id="label15">
+            <property name="visible">True</property>
+          </widget>
           <packing>
             <property name="type">tab</property>
+            <property name="position">3</property>
+            <property name="tab_fill">False</property>
           </packing>
         </child>
         <child>
           <placeholder/>
         </child>
         <child>
-          <placeholder/>
+          <widget class="GtkLabel" id="label16">
+            <property name="visible">True</property>
+          </widget>
           <packing>
             <property name="type">tab</property>
+            <property name="position">4</property>
+            <property name="tab_fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <widget class="GtkLabel" id="label17">
+            <property name="visible">True</property>
+          </widget>
+          <packing>
+            <property name="type">tab</property>
+            <property name="position">5</property>
+            <property name="tab_fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <widget class="GtkLabel" id="label18">
+            <property name="visible">True</property>
+          </widget>
+          <packing>
+            <property name="type">tab</property>
+            <property name="position">6</property>
+            <property name="tab_fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <widget class="GtkLabel" id="label19">
+            <property name="visible">True</property>
+          </widget>
+          <packing>
+            <property name="type">tab</property>
+            <property name="position">7</property>
+            <property name="tab_fill">False</property>
           </packing>
         </child>
       </widget>
