@@ -70,12 +70,7 @@ void updateVoltage()
 
 void updateRelais()
 {
-
-	if(getRelaisState((uint8_t*)&relaisState) < 0)
-	{
-		gtk_widget_show_all(GTK_WIDGET(errorPopup));
-//		gtk_main();
-	}
+	relaisState = getRelaisState();
 
 	if(relaisState & 1)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton1")), 1);
@@ -102,6 +97,18 @@ void updateRelais()
 	else
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton6")), 0);
 
+}
+
+void updateModules()
+{
+	if(getLedmatrixState())
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"ledmatrix_button")), 1);
+	else
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"ledmatrix_button")), 0);
+	if(getScrobblerState())
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"scrobbler_button")), 1);
+	else
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"scrobbler_button")), 0);
 }
 
 void updateGraph()
@@ -182,6 +189,22 @@ static gboolean updateRgb()
 	}
 	
 	return 1;
+}
+
+void on_ledmatrix_toggled(GtkToggleButton *toggle_button)
+{
+	if(gtk_toggle_button_get_active(toggle_button))
+		setLedmatrixOn();
+	else
+		setLedmatrixOff();
+}
+
+void on_scrobbler_toggled(GtkToggleButton *toggle_button)
+{
+	if(gtk_toggle_button_get_active(toggle_button))
+		setScrobblerOn();
+	else
+		setScrobblerOff();
 }
 
 
@@ -279,6 +302,7 @@ void updater()
 	{
 		updateRgb();
 		updateRelais();
+		updateModules();
 		updateTemperatures();
 		updateVoltage();
 		if(counter++ == 600)
