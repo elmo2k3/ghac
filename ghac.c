@@ -8,9 +8,13 @@
 
 #include "ghac.h"
 #include "graph_view.h"
+#include "libhagraph.h"
 #include <libhac/libhac.h>
-#include <libhagraph/libhagraph.h>
+
 	
+#define SECONDS_PER_DAY (60*60*24)
+
+
 pthread_t update_thread, network_thread;
 
 GladeXML *xml;
@@ -111,7 +115,10 @@ void updateModules()
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"scrobbler_button")), 0);
 }
 
-void updateGraph()
+static gboolean yet_drawed = 0;
+
+
+void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpointer data)
 {
 	int modul[6], sensor[6], numGraphs=0;
 
@@ -153,17 +160,20 @@ void updateGraph()
 
 	time_from = gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_from")));
 	time_to= gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_to")));
-
-	if(createGraph(tmpfilename, 800, 400, time_from, time_to, (int*)&modul, (int*)&sensor, numGraphs))
-		gtk_image_set_from_file(GTK_IMAGE(glade_xml_get_widget(xml,"image_graph")), tmpfilename);
 	
-	unlink(tmpfilename);
 
+	if(!yet_drawed)
+	{
+		createGraph(widget, 800, 400, time_from, time_to, (int*)&modul, (int*)&sensor, numGraphs);	
+		yet_drawed = 1;
+	}
 }
 
 void on_button_draw_clicked(GtkButton *button)
 {
-	updateGraph();
+	yet_drawed = 0;
+	gtk_widget_queue_draw(glade_xml_get_widget(xml,"drawingarea2"));
+	//updateGraph();
 }
 
 static gboolean updateRgb()
@@ -191,7 +201,7 @@ static gboolean updateRgb()
 	return 1;
 }
 
-void on_ledmatrix_toggled(GtkToggleButton *toggle_button)
+G_MODULE_EXPORT void on_ledmatrix_toggled(GtkToggleButton *toggle_button)
 {
 	if(gtk_toggle_button_get_active(toggle_button))
 		setLedmatrixOn();
@@ -199,7 +209,7 @@ void on_ledmatrix_toggled(GtkToggleButton *toggle_button)
 		setLedmatrixOff();
 }
 
-void on_scrobbler_toggled(GtkToggleButton *toggle_button)
+G_MODULE_EXPORT void on_scrobbler_toggled(GtkToggleButton *toggle_button)
 {
 	if(gtk_toggle_button_get_active(toggle_button))
 		setScrobblerOn();
@@ -208,7 +218,7 @@ void on_scrobbler_toggled(GtkToggleButton *toggle_button)
 }
 
 
-void on_relaisbutton1_toggled(GtkToggleButton *toggle_button)
+G_MODULE_EXPORT void on_relaisbutton1_toggled(GtkToggleButton *toggle_button)
 {
 	if(gtk_toggle_button_get_active(toggle_button))
 		relaisState |= 1;
@@ -218,7 +228,7 @@ void on_relaisbutton1_toggled(GtkToggleButton *toggle_button)
 	setRelais(relaisState);
 }
 
-void on_relaisbutton2_toggled(GtkToggleButton *toggle_button)
+G_MODULE_EXPORT void on_relaisbutton2_toggled(GtkToggleButton *toggle_button)
 {
 	if(gtk_toggle_button_get_active(toggle_button))
 		relaisState |= 2;
@@ -228,7 +238,7 @@ void on_relaisbutton2_toggled(GtkToggleButton *toggle_button)
 	setRelais(relaisState);
 }
 
-void on_relaisbutton3_toggled(GtkToggleButton *toggle_button)
+G_MODULE_EXPORT void on_relaisbutton3_toggled(GtkToggleButton *toggle_button)
 {
 	if(gtk_toggle_button_get_active(toggle_button))
 		relaisState |= 4;
@@ -238,7 +248,7 @@ void on_relaisbutton3_toggled(GtkToggleButton *toggle_button)
 	setRelais(relaisState);
 }
 
-void on_relaisbutton4_toggled(GtkToggleButton *toggle_button)
+G_MODULE_EXPORT void on_relaisbutton4_toggled(GtkToggleButton *toggle_button)
 {
 	if(gtk_toggle_button_get_active(toggle_button))
 		relaisState |= 8;
@@ -248,7 +258,7 @@ void on_relaisbutton4_toggled(GtkToggleButton *toggle_button)
 	setRelais(relaisState);
 }
 
-void on_relaisbutton5_toggled(GtkToggleButton *toggle_button)
+G_MODULE_EXPORT void on_relaisbutton5_toggled(GtkToggleButton *toggle_button)
 {
 	if(gtk_toggle_button_get_active(toggle_button))
 		relaisState |= 16;
@@ -258,7 +268,7 @@ void on_relaisbutton5_toggled(GtkToggleButton *toggle_button)
 	setRelais(relaisState);
 }
 
-void on_relaisbutton6_toggled(GtkToggleButton *toggle_button)
+G_MODULE_EXPORT void on_relaisbutton6_toggled(GtkToggleButton *toggle_button)
 {
 	if(gtk_toggle_button_get_active(toggle_button))
 		relaisState |= 32;
@@ -268,7 +278,7 @@ void on_relaisbutton6_toggled(GtkToggleButton *toggle_button)
 	setRelais(relaisState);
 }
 
-void on_button_send_clicked(GtkWidget *widget)
+G_MODULE_EXPORT void on_button_send_clicked(GtkWidget *widget)
 {
 	gint rgb_modul;
 	gint smoothness;
@@ -305,21 +315,48 @@ void updater()
 		updateModules();
 		updateTemperatures();
 		updateVoltage();
+
 		if(counter++ == 600)
 		{
-			updateGraph();
+#ifdef _WIN32
+#endif
+			//updateGraph();
 			counter=0;
 		}
+#ifdef _WIN32
+		g_usleep(10000);
+#else
 		sleep(10);
+#endif
 	}
 }
 
-void trayIconClicked(GtkWidget *foo, gpointer data)
+G_MODULE_EXPORT void trayIconClicked(GtkWidget *foo, gpointer data)
 {
 	if(GTK_WIDGET_VISIBLE(widget))
 		gtk_widget_hide(GTK_WIDGET(widget));
 	else
 		gtk_widget_show_all(GTK_WIDGET(widget));
+}
+
+void on_drawingarea1_expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data)
+{
+	cairo_t *cr;
+
+	cr = gdk_cairo_create(widget->window);
+	cairo_set_source_rgb(cr, 0, 0, 0);
+	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_set_font_size(cr, 40.0);
+	cairo_move_to(cr, 10.0, 50.0);
+	cairo_show_text(cr, "elmo");
+	
+	cairo_set_source_rgb(cr, 0, 0, 50);
+	cairo_move_to(cr, 30.0, 50.0);
+	cairo_show_text(cr, "2k3");
+
+	cairo_destroy(cr);
+
+	return FALSE;
 }
 
 void trayIconPopup(GtkStatusIcon *status_icon, guint button, guint32 activate_time, gpointer popUpMenu)
