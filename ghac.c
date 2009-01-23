@@ -32,7 +32,7 @@ gint exit_handler(GtkWidget *widget, GdkEvent *event, gpointer data)
 	return FALSE; // darf beenden
 }
 
-void ghac_end(GtkWidget *widget, gpointer daten)
+G_MODULE_EXPORT void ghac_end(GtkWidget *widget, gpointer daten)
 {
 	closeLibHac();
 	gtk_main_quit();
@@ -59,6 +59,43 @@ void updateTemperatures()
 	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_outside")), label_buffer);
 	sprintf(label_buffer,"%3.2f°C", temperature_wohnzimmer);
 	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_wohnzimmer")), label_buffer);
+}
+
+void updateThermostat()
+{
+	int16_t tempis, tempset, voltage;
+	int8_t valve, mode;
+
+	gchar label_buffer[20];
+	
+	hr20GetStatus(&tempis, &tempset, &valve, &voltage, &mode);
+
+	sprintf(label_buffer,"%3.2f°C", (float)tempis/100.0);
+	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_t_is")), label_buffer);
+//	sprintf(label_buffer,"%3.2f°C", (float)tempset/100.0);
+//	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_t_set")), label_buffer);
+	gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,"scale_t_set")),(double)tempset/100.0);
+	sprintf(label_buffer,"%d%%", valve);
+	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_valve")), label_buffer);
+	sprintf(label_buffer,"%1.3fV", (float)voltage/1000.0);
+	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_bat")), label_buffer);
+	if(mode == 1)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_manual")), 1);
+}
+
+G_MODULE_EXPORT gint thermostat_set_temperature(GtkWidget *widget)
+{
+	double temperature;
+	int t;
+
+	temperature = gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"scale_t_set"))) * 10 / 5;
+
+	t = (int)temperature*5;
+//	printf("t_set = %d\n",t);
+	temperature = (double)t/10.0;
+
+	setHr20Temperature(t);
+	return 0;
 }
 
 void updateVoltage()
@@ -115,17 +152,13 @@ void updateModules()
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"scrobbler_button")), 0);
 }
 
-static gboolean yet_drawed = 0;
 
-
-void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpointer data)
+G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpointer data)
 {
 	int modul[6], sensor[6], numGraphs=0;
 
-	gchar *time_from,
-	      *time_to;
-
-	const char *tmpfilename = "tempgraph.png";
+	const gchar *time_from = gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_from")));
+	const gchar *time_to= gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_to")));
 
 	if(graph_bo_out)
 	{
@@ -157,21 +190,26 @@ void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpointer data)
 		sensor[numGraphs] = 1;
 		numGraphs++;
 	}
-
-	time_from = gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_from")));
-	time_to= gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_to")));
-	
-
-	if(!yet_drawed)
+	if(graph_oe_wohn)
 	{
-		createGraph(widget, 800, 400, time_from, time_to, (int*)&modul, (int*)&sensor, numGraphs);	
-		yet_drawed = 1;
+		modul[numGraphs] = 4;
+		sensor[numGraphs] = 1;
+		numGraphs++;
 	}
+
+	
+	gint x,y;
+	GdkWindow *window = widget->window;
+	gdk_window_get_geometry(window,0,0,&x,&y,0);
+#ifdef _DEBUG	
+	printf("Width: %d Height: %d\n",x,y);
+#endif
+	createGraph2(widget, x,y, time_from, time_to, (int*)&modul, (int*)&sensor, numGraphs);	
 }
 
-void on_button_draw_clicked(GtkButton *button)
+G_MODULE_EXPORT void on_button_draw_clicked(GtkButton *button)
 {
-	yet_drawed = 0;
+	setDrawGraph();
 	gtk_widget_queue_draw(glade_xml_get_widget(xml,"drawingarea2"));
 	//updateGraph();
 }
@@ -315,6 +353,7 @@ void updater()
 		updateModules();
 		updateTemperatures();
 		updateVoltage();
+		updateThermostat();
 
 		if(counter++ == 600)
 		{
@@ -323,8 +362,9 @@ void updater()
 			//updateGraph();
 			counter=0;
 		}
+		gtk_widget_queue_draw(glade_xml_get_widget(xml,"scrobbler_button"));
 #ifdef _WIN32
-		g_usleep(10000);
+		g_usleep(5000000);
 #else
 		sleep(10);
 #endif
@@ -339,7 +379,7 @@ G_MODULE_EXPORT void trayIconClicked(GtkWidget *foo, gpointer data)
 		gtk_widget_show_all(GTK_WIDGET(widget));
 }
 
-void on_drawingarea1_expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data)
+/*G_MODULE_EXPORT void on_drawingarea1_expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data)
 {
 	cairo_t *cr;
 
@@ -358,7 +398,7 @@ void on_drawingarea1_expose_event(GtkWidget *widget, GdkEventExpose *event, gpoi
 
 	return FALSE;
 }
-
+*/
 void trayIconPopup(GtkStatusIcon *status_icon, guint button, guint32 activate_time, gpointer popUpMenu)
 {
 	gtk_menu_popup(GTK_MENU(popUpMenu), NULL, NULL, gtk_status_icon_position_menu, status_icon, button, activate_time);
@@ -373,29 +413,36 @@ int main(int argc, char *argv[])
 
 	char *server_ip = getenv("HAD_HOST");
 
+#ifdef _WIN32
 	if(!server_ip)
-		server_ip = HAD_HOST;
+		server_ip = "192.168.0.29";
+#else
+	if(!server_ip)
+		server_ip = "192.168.0.2";
+#endif
 
 	gchar time_from[11], time_to[11];
 
 	graph_bo_out = 1;
-	graph_bo_wohn = 1;
-	
+	graph_oe_out = 1;
 	
 	time(&rawtime);
-	today = gmtime(&rawtime);
+	today = localtime(&rawtime);
 	strftime (time_from,255,"%Y-%m-%d",today);
 	rawtime += SECONDS_PER_DAY; // jetzt ist morgen heute
-	today = gmtime(&rawtime);
+	today = localtime(&rawtime);
 	strftime (time_to,255,"%Y-%m-%d",today);
 	
 	initLibHac(server_ip);
-//	initLibHac("127.0.0.1");
 
 	gtk_init(&argc, &argv);
-
+#ifdef _WIN32
+	xml = glade_xml_new("C:\\Programme\\ghac\\ghac.glade", NULL, NULL);
+	trayIcon = gtk_status_icon_new_from_file("C:\\Programme\\ghac\\gnome-color-browser.png");
+#else
 	xml = glade_xml_new("/home/bjoern/Projekte/home-automation/ghac/glade/ghac.glade", NULL, NULL);
 	trayIcon = gtk_status_icon_new_from_file("/usr/share/pixmaps/gnome-color-browser.png");
+#endif
 
 	widget = glade_xml_get_widget(xml, "mainWindow");
 	errorPopup = glade_xml_get_widget(xml,"errorDialog");
@@ -412,7 +459,6 @@ int main(int argc, char *argv[])
 
 	
 	gtk_status_icon_set_visible(trayIcon, TRUE);
-
 	glade_xml_signal_autoconnect(xml);
 
 	
