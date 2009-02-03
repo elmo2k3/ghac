@@ -74,27 +74,23 @@ void updateThermostat()
 	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_t_is")), label_buffer);
 //	sprintf(label_buffer,"%3.2f°C", (float)tempset/100.0);
 //	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_t_set")), label_buffer);
-	gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,"scale_t_set")),(double)tempset/100.0);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(glade_xml_get_widget(xml,"combobox_temperature")),tempset/50 - 10);
 	sprintf(label_buffer,"%d%%", valve);
 	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_valve")), label_buffer);
 	sprintf(label_buffer,"%1.3fV", (float)voltage/1000.0);
 	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_bat")), label_buffer);
-	if(mode == 1)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_manual")), 1);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(glade_xml_get_widget(xml,"combobox_mode")),(gint)mode-1);
 }
 
 G_MODULE_EXPORT gint thermostat_set_temperature(GtkWidget *widget)
 {
-	double temperature;
-	int t;
+	int16_t temperature;
 
-	temperature = gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"scale_t_set"))) * 10 / 5;
+	temperature = (int16_t)(gtk_combo_box_get_active(GTK_COMBO_BOX(glade_xml_get_widget(xml,"combobox_temperature"))) + 10) * 5;
 
-	t = (int)temperature*5;
-//	printf("t_set = %d\n",t);
-	temperature = (double)t/10.0;
 
-	setHr20Temperature(t);
+	printf("%d\n",temperature);
+	setHr20Temperature(temperature);
 	return 0;
 }
 
@@ -204,7 +200,7 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 #ifdef _DEBUG	
 	printf("Width: %d Height: %d\n",x,y);
 #endif
-	createGraph2(widget, x,y, time_from, time_to, (int*)&modul, (int*)&sensor, numGraphs);	
+	createGraph(widget, x,y, time_from, time_to, (int*)&modul, (int*)&sensor, numGraphs);	
 }
 
 G_MODULE_EXPORT void on_button_draw_clicked(GtkButton *button)
@@ -412,6 +408,8 @@ int main(int argc, char *argv[])
 	struct tm *today;
 
 	char *server_ip = getenv("HAD_HOST");
+	char *home = getenv("HOME");
+	char location[1024];
 
 #ifdef _WIN32
 	if(!server_ip)
@@ -440,8 +438,10 @@ int main(int argc, char *argv[])
 	xml = glade_xml_new("C:\\Programme\\ghac\\ghac.glade", NULL, NULL);
 	trayIcon = gtk_status_icon_new_from_file("C:\\Programme\\ghac\\gnome-color-browser.png");
 #else
-	xml = glade_xml_new("/home/bjoern/Projekte/home-automation/ghac/glade/ghac.glade", NULL, NULL);
-	trayIcon = gtk_status_icon_new_from_file("/usr/share/pixmaps/gnome-color-browser.png");
+	sprintf(location,"%s/.ghac/ghac.glade",home);
+	xml = glade_xml_new(location, NULL, NULL);
+	sprintf(location,"%s/.ghac/gnome-color-browser.png",home);
+	trayIcon = gtk_status_icon_new_from_file(location);
 #endif
 
 	widget = glade_xml_get_widget(xml, "mainWindow");

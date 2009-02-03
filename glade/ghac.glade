@@ -792,44 +792,12 @@
                 <property name="width_request">641</property>
                 <property name="height_request">447</property>
                 <property name="visible">True</property>
-                <property name="n_rows">6</property>
+                <property name="border_width">2</property>
+                <property name="n_rows">5</property>
                 <property name="n_columns">2</property>
+                <property name="column_spacing">2</property>
+                <property name="row_spacing">2</property>
                 <property name="homogeneous">True</property>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <widget class="GtkRadioButton" id="radiobutton_manu">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="label" translatable="yes">Manuell</property>
-                    <property name="response_id">0</property>
-                    <property name="active">True</property>
-                    <property name="draw_indicator">True</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">5</property>
-                    <property name="bottom_attach">6</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkRadioButton" id="radiobutton_auto">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="label" translatable="yes">Automatisch</property>
-                    <property name="response_id">0</property>
-                    <property name="active">True</property>
-                    <property name="draw_indicator">True</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">4</property>
-                    <property name="bottom_attach">5</property>
-                  </packing>
-                </child>
                 <child>
                   <widget class="GtkLabel" id="label21">
                     <property name="visible">True</property>
@@ -838,20 +806,6 @@
                   <packing>
                     <property name="top_attach">4</property>
                     <property name="bottom_attach">5</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkHScale" id="scale_t_set">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="adjustment">5 5 40 1 10 10</property>
-                    <signal name="button_release_event" handler="thermostat_set_temperature"/>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">1</property>
-                    <property name="bottom_attach">2</property>
                   </packing>
                 </child>
                 <child>
@@ -922,6 +876,87 @@
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">Temperatur ist</property>
                   </widget>
+                </child>
+                <child>
+                  <widget class="GtkComboBox" id="combobox_temperature">
+                    <property name="width_request">100</property>
+                    <property name="visible">True</property>
+                    <property name="items" translatable="yes">  5,0 °C
+  5,5 °C
+  6,0 °C
+  6,5 °C
+  7,0 °C
+  7,5 °C
+  8,0 °C
+  8,5 °C
+  9,0 °C
+  9,5 °C
+10,0 °C
+10,5 °C
+11,0 °C
+11,5 °C
+12,0 °C
+12,5 °C
+13,0 °C
+13,5 °C
+14,0 °C
+14,5 °C
+15,0 °C
+15,5 °C
+16,0 °C
+16,5 °C
+17,0 °C
+17,5 °C
+18,0 °C
+18,5 °C
+19,0 °C
+19,5 °C
+20,0 °C
+20,5 °C
+21,0 °C
+21,5 °C
+22,0 °C
+22,5 °C
+23,0 °C
+23,5 °C
+24,0 °C
+24,5 °C
+25,0 °C
+25,5 °C
+26,0 °C
+26,5 °C
+27,0 °C
+27,5 °C
+28,0 °C
+28,5 °C
+29,0 °C
+29,5 °C
+30,0 °C</property>
+                    <signal name="changed" handler="thermostat_set_temperature"/>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                    <property name="x_options">GTK_FILL</property>
+                    <property name="y_options"></property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkComboBox" id="combobox_mode">
+                    <property name="visible">True</property>
+                    <property name="items" translatable="yes">Manuell
+Automatisch</property>
+                    <signal name="changed" handler="thermostat_set_mode"/>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">4</property>
+                    <property name="bottom_attach">5</property>
+                    <property name="y_options">GTK_EXPAND</property>
+                  </packing>
                 </child>
               </widget>
             </child>
