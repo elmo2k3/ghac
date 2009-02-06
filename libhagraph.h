@@ -2,12 +2,10 @@
 #define __HAGRAPH_H__
 
 #include <gtk/gtk.h>
+#include "data.h"
 
-void setDrawGraph(void);
-
-int createGraph(GtkWidget *widget, int width, int heigth, const char *time_from,
-		const char *time_to, int *modul, int *sensor, int numGraphs);
-
+extern void drawGraphGtk(GtkWidget *widget, struct _graph_data *graph);
+extern void drawGraphPng(char *filename, struct _graph_data *graph, int width, int height);
 
 #endif
 

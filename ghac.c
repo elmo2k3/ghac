@@ -9,6 +9,7 @@
 #include "ghac.h"
 #include "graph_view.h"
 #include "libhagraph.h"
+#include "data.h"
 #include <libhac/libhac.h>
 
 	
@@ -25,6 +26,9 @@ static uint8_t relaisState;
 	
 GtkWidget *errorPopup;
 GtkWidget *widget;
+
+struct _graph_data graph;
+static int yet_drawed = 0;
 
 gint exit_handler(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
@@ -193,19 +197,27 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 		numGraphs++;
 	}
 
-	
-	gint x,y;
-	GdkWindow *window = widget->window;
-	gdk_window_get_geometry(window,0,0,&x,&y,0);
-#ifdef _DEBUG	
-	printf("Width: %d Height: %d\n",x,y);
-#endif
-	createGraph(widget, x,y, time_from, time_to, (int*)&modul, (int*)&sensor, numGraphs);	
+	if(!yet_drawed)
+	{
+		int i;
+		initGraph(&graph, time_from, time_to);
+		for(i=0; i< numGraphs; i++)
+		{
+			addGraphData(&graph, modul[i], sensor[i]);
+		}
+		drawGraphGtk(widget, &graph); 
+//		drawGraphPng("foo.png", &graph, 2000,800); 
+		yet_drawed = 1;
+	}
+	else
+		drawGraphGtk(widget, &graph);
 }
 
 G_MODULE_EXPORT void on_button_draw_clicked(GtkButton *button)
 {
-	setDrawGraph();
+	freeGraph(&graph);
+	yet_drawed = 0;
+//	setDrawGraph();
 	gtk_widget_queue_draw(glade_xml_get_widget(xml,"drawingarea2"));
 	//updateGraph();
 }
