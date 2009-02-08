@@ -289,14 +289,17 @@ static double transformX(time_t x, int timebase, int width)
 	{
 		case TB_DAY: 	x_div = SECONDS_PER_DAY; break;
 		case TB_WEEK: 	x_div = SECONDS_PER_WEEK;
-						x += SECONDS_PER_DAY*(time->tm_wday-1);
-						break;
+				if(time->tm_wday == 0) //sunday
+					x += SECONDS_PER_DAY*6;
+				else
+					x += SECONDS_PER_DAY*(time->tm_wday-1);
+				break;
 		case TB_MONTH: 	x_div = SECONDS_PER_MONTH;
-						x += SECONDS_PER_DAY*(time->tm_mday-1);
-						break; 
+				x += SECONDS_PER_DAY*(time->tm_mday-1);
+				break; 
 		case TB_YEAR: 	x_div = SECONDS_PER_YEAR;
-						x += SECONDS_PER_DAY*time->tm_yday;
-						break; 
+				x += SECONDS_PER_DAY*time->tm_yday;
+				break; 
 	}
 	return (double)(x/x_div*(width-X1_SKIP-X2_SKIP)+X1_SKIP);
 }

@@ -155,10 +155,11 @@ void updateModules()
 
 G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpointer data)
 {
+	char date[20];
+	char from[13], to[13];
+	int view;
 	int modul[6], sensor[6], numGraphs=0;
-
-	const gchar *time_from = gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_from")));
-	const gchar *time_to= gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_to")));
+	unsigned int day, month, year;
 
 	if(graph_bo_out)
 	{
@@ -200,7 +201,22 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 	if(!yet_drawed)
 	{
 		int i;
-		initGraph(&graph, time_from, time_to);
+		gtk_calendar_get_date(GTK_CALENDAR(glade_xml_get_widget(xml,"calendar")),
+					&year, &month, &day);
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_day"))))
+			view = TB_DAY;
+		else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_week"))))
+			view = TB_WEEK;
+		else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_month"))))
+			view = TB_MONTH;
+		else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_year"))))
+			view = TB_YEAR;
+
+		sprintf(date,"%d-%02d-%02d",year,month+1,day);
+		transformDate(from,to,date,view);
+
+		printf("from: %s to: %s view: %d\n",from,to,view);
+		initGraph(&graph, from, to);
 		for(i=0; i< numGraphs; i++)
 		{
 			addGraphData(&graph, modul[i], sensor[i]);
@@ -431,18 +447,12 @@ int main(int argc, char *argv[])
 		server_ip = "192.168.0.2";
 #endif
 
-	gchar time_from[11], time_to[11];
-
 	graph_bo_out = 1;
 	graph_oe_out = 1;
 	
 	time(&rawtime);
 	today = localtime(&rawtime);
-	strftime (time_from,255,"%Y-%m-%d",today);
-	rawtime += SECONDS_PER_DAY; // jetzt ist morgen heute
-	today = localtime(&rawtime);
-	strftime (time_to,255,"%Y-%m-%d",today);
-	
+
 	initLibHac(server_ip);
 
 	gtk_init(&argc, &argv);
@@ -472,16 +482,14 @@ int main(int argc, char *argv[])
 	
 	gtk_status_icon_set_visible(trayIcon, TRUE);
 	glade_xml_signal_autoconnect(xml);
-
 	
-	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_from")),time_from);
-	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_to")),time_to);
-
-
-	gtk_widget_show_all(GTK_WIDGET(widget));
-
+	gtk_calendar_select_month(GTK_CALENDAR(glade_xml_get_widget(xml,"calendar")),
+			today->tm_mon, today->tm_year+1900);
+	gtk_calendar_select_day(GTK_CALENDAR(glade_xml_get_widget(xml,"calendar")),
+			today->tm_mday);
+	
 	pthread_create(&update_thread, NULL, (void*)&updater, NULL);
-
+	gtk_widget_show_all(GTK_WIDGET(widget));
 	gtk_main();
 
 	return 0;
