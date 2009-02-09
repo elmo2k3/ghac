@@ -40,18 +40,18 @@ int saveConfig(char *conf)
 	FILE *config_file = fopen(conf,"w");
 	if(!config_file)
 		return 0;
-	fprintf(config_file,"had_activated = %d\r\n",config.had_activated);
-	fprintf(config_file,"had_ip = %s\r\n",config.had_ip);
-	fprintf(config_file,"had_port = %d\r\n",config.had_port);
-	fprintf(config_file,"had_control_activated = %d\r\n",config.had_control_activated);
-	fprintf(config_file,"graph_activated = %d\r\n",config.graph_activated);
-	fprintf(config_file,"graph_database = %s\r\n",config.graph_database);
-	fprintf(config_file,"graph_ws2000 = %s\r\n",config.graph_database_ws2000);
-	fprintf(config_file,"graph_host = %s\r\n",config.graph_host);
-	fprintf(config_file,"graph_port = %d\r\n",config.graph_port);
-	fprintf(config_file,"graph_user = %s\r\n",config.graph_user);
-	fprintf(config_file,"graph_password = %s\r\n",config.graph_password);
-	fprintf(config_file,"thermostat_activated = %d\r\n",config.thermostat_activated);
+	fprintf(config_file,"had_activated = %d\n",config.had_activated);
+	fprintf(config_file,"had_ip = %s\n",config.had_ip);
+	fprintf(config_file,"had_port = %d\n",config.had_port);
+	fprintf(config_file,"had_control_activated = %d\n",config.had_control_activated);
+	fprintf(config_file,"graph_activated = %d\n",config.graph_activated);
+	fprintf(config_file,"graph_database = %s\n",config.graph_database);
+	fprintf(config_file,"graph_ws2000 = %s\n",config.graph_database_ws2000);
+	fprintf(config_file,"graph_host = %s\n",config.graph_host);
+	fprintf(config_file,"graph_port = %d\n",config.graph_port);
+	fprintf(config_file,"graph_user = %s\n",config.graph_user);
+	fprintf(config_file,"graph_password = %s\n",config.graph_password);
+	fprintf(config_file,"thermostat_activated = %d\n",config.thermostat_activated);
 
 	fclose(config_file);
 	return 1;
@@ -65,16 +65,28 @@ int loadConfig(char *conf)
 	char *lpos;
 	int param;
 
+	/* set everything to zero */
+	memset(&config, 0, sizeof(config));
+	
+	/* default values */
+	config.had_port = CONFIG_DEFAULT_HAD_PORT;
+	config.graph_port = CONFIG_DEFAULT_GRAPH_PORT;
+	config.had_activated = CONFIG_DEFAULT_HAD_ACTIVATED;
+	strcpy(config.had_ip, CONFIG_DEFAULT_HAD_IP);
+	config.graph_activated = CONFIG_DEFAULT_GRAPH_ACTIVATED;
+	strcpy(config.graph_database, CONFIG_DEFAULT_GRAPH_DATABASE);
+	strcpy(config.graph_host, CONFIG_DEFAULT_GRAPH_HOST);
+	strcpy(config.graph_user, CONFIG_DEFAULT_GRAPH_USER);
+	strcpy(config.graph_password, CONFIG_DEFAULT_GRAPH_PASSWORD);
+	strcpy(config.graph_database_ws2000, CONFIG_DEFAULT_GRAPH_DATABASE_WS2000);
+	config.thermostat_activated = CONFIG_DEFAULT_THERMOSTAT_ACTIVATED;
+	config.had_control_activated = CONFIG_DEFAULT_CONTROL_ACTIVATED;
+
 	config_file = fopen(conf,"r");
 	if(!config_file)
 	{
 		return 0;
 	}
-
-	/* set everything to zero */
-	memset(&config, 0, sizeof(config));
-	
-	/* default values */
 
 	/* step through every line */
 	while(fgets(line, sizeof(line), config_file) != NULL)
@@ -122,11 +134,9 @@ int loadConfig(char *conf)
 					break;
 				/* graph mysql database */
 				case 4: strcpy(config.graph_database, value);
-					printf("Database = %s\n",value);
 					break;
 				/* graph mysql database ws2000 */
 				case 5: strcpy(config.graph_database_ws2000, value);
-					printf("Database ws2000 = %s\n",value);
 					break;
 				/* graph mysql host */
 				case 6: strcpy(config.graph_host, value);

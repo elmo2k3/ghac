@@ -5,6 +5,7 @@
 #include <glib/gprintf.h>
 #include <pthread.h>
 #include <time.h>
+#include <string.h>
 
 #include "ghac.h"
 #include "graph_view.h"
@@ -39,7 +40,10 @@ gint exit_handler(GtkWidget *widget, GdkEvent *event, gpointer data)
 
 G_MODULE_EXPORT void ghac_end(GtkWidget *widget, gpointer daten)
 {
-	saveConfig(GHAC_CONFIG);
+	char *home = getenv("HOME");
+	char location[1024];
+	sprintf(location,GHAC_CONFIG,home);
+	saveConfig(location);
 	closeLibHac();
 	gtk_main_quit();
 }
@@ -80,7 +84,8 @@ void updateThermostat()
 	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_t_is")), label_buffer);
 //	sprintf(label_buffer,"%3.2f°C", (float)tempset/100.0);
 //	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_t_set")), label_buffer);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(glade_xml_get_widget(xml,"combobox_temperature")),tempset/50 - 10);
+	if((tempset/50-10) >= -1)
+		gtk_combo_box_set_active(GTK_COMBO_BOX(glade_xml_get_widget(xml,"combobox_temperature")),tempset/50 - 10);
 	sprintf(label_buffer,"%d%%", valve);
 	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_valve")), label_buffer);
 	sprintf(label_buffer,"%1.3fV", (float)voltage/1000.0);
@@ -375,32 +380,92 @@ G_MODULE_EXPORT void on_button_send_clicked(GtkWidget *widget)
 
 }
 
+G_MODULE_EXPORT void on_button_config_set_clicked(GtkWidget *widget)
+{
+	int tempint;
+	strncpy(config.had_ip,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_ip"))), 15);
+	config.had_ip[15] = 0;
+	config.had_port = atoi(gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_port"))));
+	config.graph_port = atoi(gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_port"))));
+	strncpy(config.graph_database,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_database"))), 99);
+	config.graph_database[99] = 0;
+	strncpy(config.graph_user,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_user"))), 99);
+	config.graph_user[99] = 0;
+	strncpy(config.graph_password,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_password"))), 99);
+	config.graph_password[99] = 0;
+	strncpy(config.graph_database_ws2000,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_ws2000"))), 99);
+	config.graph_database_ws2000[99] = 0;
+	strncpy(config.graph_host,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_host"))), 99);
+	config.graph_host[99] = 0;
+	tempint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_had_activated"))); 
+	if(tempint != config.had_activated)
+	{
+		if(tempint)
+		{
+			initLibHac(config.had_ip);
+			if(config.had_control_activated)
+				gtk_widget_show(GTK_WIDGET(glade_xml_get_widget(xml,"hbox4")));
+			if(config.thermostat_activated)
+				gtk_widget_show(GTK_WIDGET(glade_xml_get_widget(xml,"fixed2")));
+		}
+		else
+		{
+			gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"hbox4")));
+			gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"fixed2")));
+			closeLibHac();
+		}
+		config.had_activated = tempint;
+	}
+	tempint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_graph_activated"))); 
+	if(tempint != config.graph_activated)
+	{
+		if(tempint)
+			gtk_widget_show(GTK_WIDGET(glade_xml_get_widget(xml,"vbox2")));
+		else
+			gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"vbox2")));
+		config.graph_activated = tempint;
+	}
+	tempint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_control_activated"))); 
+	if(tempint != config.had_control_activated)
+	{
+		if(tempint)
+			gtk_widget_show(GTK_WIDGET(glade_xml_get_widget(xml,"hbox4")));
+		else
+			gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"hbox4")));
+		config.had_control_activated = tempint;
+	}
+	tempint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_thermostat_activated"))); 
+	if(tempint != config.thermostat_activated)
+	{
+		if(tempint)
+			gtk_widget_show(GTK_WIDGET(glade_xml_get_widget(xml,"fixed2")));
+		else
+			gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"fixed2")));
+		config.thermostat_activated = tempint;
+	}
+}
+
 void updater()
 {
-	static int counter=600;
+	static int counter=10;
 
 	while(1)
 	{
 		updateRgb();
 		updateRelais();
 		updateModules();
-		updateTemperatures();
 		updateVoltage();
-		updateThermostat();
+		updateTemperatures();
 
-		if(counter++ == 600)
+		if(counter++ == 10)
 		{
-#ifdef _WIN32
-#endif
-			//updateGraph();
+			updateThermostat();
+			printf("update temperature\n");
 			counter=0;
 		}
 		gtk_widget_queue_draw(glade_xml_get_widget(xml,"scrobbler_button"));
-#ifdef _WIN32
-		g_usleep(5000000);
-#else
-		sleep(10);
-#endif
+		g_usleep(10000000);
+		printf("update\n");
 	}
 }
 
@@ -437,6 +502,37 @@ void trayIconPopup(GtkStatusIcon *status_icon, guint button, guint32 activate_ti
 	gtk_menu_popup(GTK_MENU(popUpMenu), NULL, NULL, gtk_status_icon_position_menu, status_icon, button, activate_time);
 }
 
+G_MODULE_EXPORT void loadConfigToGui()
+{
+	gchar entry[100];
+	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_ip")),config.had_ip);
+	g_sprintf(entry,"%d",config.had_port);
+	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_port")),entry);
+	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_database")),config.graph_database);
+	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_ws2000")),config.graph_database_ws2000);
+	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_host")),config.graph_host);
+	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_user")),config.graph_user);
+	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_password")),config.graph_password);
+	g_sprintf(entry,"%d",config.graph_port);
+	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_port")),entry);
+	if(config.had_activated)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_had_activated")),1);
+	else
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_had_activated")),0);
+	if(config.graph_activated)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_graph_activated")),1);
+	else
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_graph_activated")),0);
+	if(config.thermostat_activated)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_thermostat_activated")),1);
+	else
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_thermostat_activated")),0);
+	if(config.had_control_activated)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_control_activated")),1);
+	else
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_control_activated")),0);
+}
+	
 
 int main(int argc, char *argv[])
 {
@@ -447,8 +543,9 @@ int main(int argc, char *argv[])
 	char *server_ip = getenv("HAD_HOST");
 	char *home = getenv("HOME");
 	char location[1024];
+	sprintf(location,GHAC_CONFIG,home);
 	
-	loadConfig(GHAC_CONFIG);
+	loadConfig(location);
 	if(!server_ip)
 	{
 		server_ip = config.had_ip;
@@ -497,6 +594,7 @@ int main(int argc, char *argv[])
 			today->tm_mday);
 	
 	pthread_create(&update_thread, NULL, (void*)&updater, NULL);
+	loadConfigToGui();
 	gtk_widget_show_all(GTK_WIDGET(widget));
 	if(!config.had_control_activated)
 		gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"hbox4")));
