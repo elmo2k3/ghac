@@ -1,9 +1,11 @@
 #ifndef __GHAC_H__
 #define __GHAC_H__
 
-#define HAC "/usr/bin/hac"
-#define HAD_HOST "192.168.0.2"
-//#define HAD_HOST "127.0.0.1"
+#ifdef _WIN32
+#define GHAC_CONFIG "C:\\Programme\\ghac\\ghac.conf"
+#else
+#define GHAC_CONFIG "/home/bjoern/.ghac/ghac.conf"
+#endif
 
 #endif
 

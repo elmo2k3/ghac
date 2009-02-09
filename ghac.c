@@ -10,6 +10,7 @@
 #include "graph_view.h"
 #include "libhagraph.h"
 #include "data.h"
+#include "config.h"
 #include <libhac/libhac.h>
 
 	
@@ -38,6 +39,7 @@ gint exit_handler(GtkWidget *widget, GdkEvent *event, gpointer data)
 
 G_MODULE_EXPORT void ghac_end(GtkWidget *widget, gpointer daten)
 {
+	saveConfig(GHAC_CONFIG);
 	closeLibHac();
 	gtk_main_quit();
 }
@@ -84,6 +86,13 @@ void updateThermostat()
 	sprintf(label_buffer,"%1.3fV", (float)voltage/1000.0);
 	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_bat")), label_buffer);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(glade_xml_get_widget(xml,"combobox_mode")),(gint)mode-1);
+}
+
+G_MODULE_EXPORT gint thermostat_set_mode(GtkWidget *widget)
+{
+	gint mode = (gint)(gtk_combo_box_get_active(GTK_COMBO_BOX(glade_xml_get_widget(xml,"combobox_mode"))))+1;
+	setHr20Mode((int)mode);
+	return 0;
 }
 
 G_MODULE_EXPORT gint thermostat_set_temperature(GtkWidget *widget)
@@ -438,14 +447,12 @@ int main(int argc, char *argv[])
 	char *server_ip = getenv("HAD_HOST");
 	char *home = getenv("HOME");
 	char location[1024];
-
-#ifdef _WIN32
+	
+	loadConfig(GHAC_CONFIG);
 	if(!server_ip)
-		server_ip = "192.168.0.29";
-#else
-	if(!server_ip)
-		server_ip = "192.168.0.2";
-#endif
+	{
+		server_ip = config.had_ip;
+	}
 
 	graph_bo_out = 1;
 	graph_oe_out = 1;
@@ -453,7 +460,8 @@ int main(int argc, char *argv[])
 	time(&rawtime);
 	today = localtime(&rawtime);
 
-	initLibHac(server_ip);
+	if(config.had_activated)
+		initLibHac(server_ip);
 
 	gtk_init(&argc, &argv);
 #ifdef _WIN32
@@ -490,6 +498,12 @@ int main(int argc, char *argv[])
 	
 	pthread_create(&update_thread, NULL, (void*)&updater, NULL);
 	gtk_widget_show_all(GTK_WIDGET(widget));
+	if(!config.had_control_activated)
+		gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"hbox4")));
+	if(!config.thermostat_activated)
+		gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"fixed2")));
+	if(!config.graph_activated)
+		gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"vbox2")));
 	gtk_main();
 
 	return 0;
