@@ -463,7 +463,6 @@ void updater()
 			printf("update temperature\n");
 			counter=0;
 		}
-		gtk_widget_queue_draw(glade_xml_get_widget(xml,"scrobbler_button"));
 		g_usleep(10000000);
 		printf("update\n");
 	}
@@ -474,7 +473,10 @@ G_MODULE_EXPORT void trayIconClicked(GtkWidget *foo, gpointer data)
 	if(GTK_WIDGET_VISIBLE(widget))
 		gtk_widget_hide(GTK_WIDGET(widget));
 	else
+	{
+		gtk_window_deiconify(GTK_WINDOW(widget));
 		gtk_widget_show_all(GTK_WIDGET(widget));
+	}
 }
 
 /*G_MODULE_EXPORT void on_drawingarea1_expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data)
@@ -593,8 +595,6 @@ int main(int argc, char *argv[])
 	gtk_calendar_select_day(GTK_CALENDAR(glade_xml_get_widget(xml,"calendar")),
 			today->tm_mday);
 	
-	pthread_create(&update_thread, NULL, (void*)&updater, NULL);
-	loadConfigToGui();
 	gtk_widget_show_all(GTK_WIDGET(widget));
 	if(!config.had_control_activated)
 		gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"hbox4")));
@@ -602,6 +602,8 @@ int main(int argc, char *argv[])
 		gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"fixed2")));
 	if(!config.graph_activated)
 		gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"vbox2")));
+	loadConfigToGui();
+	pthread_create(&update_thread, NULL, (void*)&updater, NULL);
 	gtk_main();
 
 	return 0;
