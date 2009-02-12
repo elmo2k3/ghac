@@ -4,7 +4,7 @@ ghac_SOURCES = config.c\
 	ghac.c\
 	graph_view.c
 
-LIBS = @libglade_LIBS@ @libhagraph_LIBS@ @libhac_LIBS@
+LIBS = @libglade_LIBS@ @libhagraph_LIBS@ @libhac_LIBS@ -export-dynamic
 
 if WIN32
 LIBS += -lmysql -lws2_32 -lpthreadGC2
