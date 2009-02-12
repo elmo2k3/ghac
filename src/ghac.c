@@ -7,12 +7,12 @@
 #include <time.h>
 #include <string.h>
 
+#include <libhac/libhac.h>
+#include <libhagraph/libhagraph.h>
+
 #include "ghac.h"
 #include "graph_view.h"
-#include "libhagraph.h"
-#include "data.h"
 #include "config.h"
-#include <libhac/libhac.h>
 
 	
 #define SECONDS_PER_DAY (60*60*24)
@@ -233,7 +233,12 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 		initGraph(&graph, from, to);
 		for(i=0; i< numGraphs; i++)
 		{
-			addGraphData(&graph, modul[i], sensor[i]);
+			addGraphData(&graph, modul[i], sensor[i],
+				config.graph_host,
+				config.graph_user,
+				config.graph_password,
+				config.graph_database,
+				config.graph_database_ws2000);
 		}
 		drawGraphGtk(widget, &graph); 
 //		drawGraphPng("foo.png", &graph, 2000,800); 
