@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE(ghac, 0.2.0)
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_LIBTOOL
-
+AM_CONFIG_HEADER([config.h])
 # Checks for libraries.
 
 # Checks for header files.
@@ -44,11 +44,6 @@ PKG_CHECK_MODULES([libglade], libglade-2.0)
 AC_SUBST(libglade_LIBS)
 AC_SUBST(libglade_CFLAGS)
 
-#libhagraph
-PKG_CHECK_MODULES([libhagraph], libhagraph >= 0.2.0)
-AC_SUBST(libhagraph_LIBS)
-AC_SUBST(libhagraph_CFLAGS)
-
 #libhac
 PKG_CHECK_MODULES([libhac], libhac >= 0.2.0)
 AC_SUBST(libhac_LIBS)
@@ -69,4 +64,50 @@ esac
 
 AM_CONDITIONAL(WIN32, test x$win32 = xyes)
 
+AC_ARG_ENABLE(libhagraph,
+              [  --disable-libhagraph			Graph drawing support.],
+              [ case "${enableval}" in
+                    yes)    enable_libhagraph=yes;;
+                     no)    enable_libhagraph=no;;
+                      *)    AC_MSG_ERROR([bad value ${enableval} for --disable-libhagraph]);;
+                esac],
+              [enable_libhagraph=yes])
+
+if test x${enable_libhagraph} = xyes; then
+	PKG_CHECK_MODULES([libhagraph], libhagraph)
+	AC_SUBST(libhagraph_LIBS)
+	AC_SUBST(libhagraph_CFLAGS)
+	AC_DEFINE(ENABLE_LIBHAGRAPH, 1, [Enable Graph Drawing Support])
+
+fi
+
+AC_ARG_ENABLE(libhac,
+              [  --disable-libhac			Home automation client support.],
+              [ case "${enableval}" in
+                    yes)    enable_libhac=yes;;
+                     no)    enable_libhac=no;;
+                      *)    AC_MSG_ERROR([bad value ${enableval} for --disable-libhac]);;
+                esac],
+              [enable_libhac=yes])
+
+if test x${enable_libhac} = xyes; then
+	PKG_CHECK_MODULES([libhac], libhac)
+	AC_SUBST(libhac_LIBS)
+	AC_SUBST(libhac_CFLAGS)
+	AC_DEFINE(ENABLE_LIBHAC, 1, [Enable Home Automation Client Support])
+
+fi
+
 AC_OUTPUT(Makefile src/Makefile)
+
+if test x${enable_libhagraph} = xyes; then
+	echo "Use libhagraph:  enabled"
+else
+	echo "Use libhagraph:  disabled"
+fi
+
+if test x${enable_libhac} = xyes; then
+	echo "Use libhac:      enabled"
+else
+	echo "Use libhac:      disabled"
+fi

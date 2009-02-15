@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo "running autoheader"
+autoheader || exit 1
 echo "running aclocal"
 aclocal || exit 1
 echo "running libtoolize"
