@@ -4,8 +4,8 @@ ghac_SOURCES = configfile.c\
 	ghac.c\
 	graph_view.c
 
-LIBS = @libglade_LIBS@ -export-dynamic
-AM_CFLAGS = @CFLAGS@ @libglade_CFLAGS@
+LIBS = @libglade_LIBS@ -export-dynamic @EXTRA_LDFLAGS@
+AM_CFLAGS = @CFLAGS@ @libglade_CFLAGS@ @EXTRA_CFLAGS@
 
 if ENABLE_LIBHAGRAPH
 LIBS+=@libhagraph_LIBS@

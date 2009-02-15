@@ -29,6 +29,8 @@ AC_FUNC_REALLOC
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS([floor memset strchr strstr])
 
+AC_SUBST(EXTRA_CFLAGS)
+AC_SUBST(EXTRA_LDFLAGS)
 #glib
 PKG_CHECK_MODULES([glib], glib-2.0 >= 2.10)
 AC_SUBST(glib_LIBS)
@@ -54,12 +56,7 @@ case $host in
   *-*-mingw32* | *-*-windows)
     win32=yes
     EXTRA_CFLAGS="$EXTRA_CFLAGS -mno-cygwin -mwindows -mms-bitfields"
-    EXTRA_LDFLAGS="-export-all-symbols -mwindows -mms-bitfields" ;;
-  *-*-cygwin*)
-    win32=yes
-    EXTRA_LDFLAGS="-export-all-symbols -mms-bitfields" ;;
-  *-apple-darwin*)
-    macosx=yes;;
+    EXTRA_LDFLAGS="-mwindows -mms-bitfields" ;;
 esac
 
 AM_CONDITIONAL(WIN32, test x$win32 = xyes)
