@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __CONFIG_H__
-#define __CONFIG_H__
+#ifndef __CONFIGFILE_H__
+#define __CONFIGFILE_H__
 
 /** @file config.h
  * Config file routines

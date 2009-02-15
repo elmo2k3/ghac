@@ -3,12 +3,12 @@
 
 AC_PREREQ(2.61)
 AC_INIT(ghac, 0.2.0, bjoern@bjoern-b.de)
+AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE(ghac, 0.2.0)
 
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_LIBTOOL
-AM_CONFIG_HEADER([config.h])
 # Checks for libraries.
 
 # Checks for header files.
@@ -63,7 +63,6 @@ case $host in
 esac
 
 AM_CONDITIONAL(WIN32, test x$win32 = xyes)
-
 AC_ARG_ENABLE(libhagraph,
               [  --disable-libhagraph			Graph drawing support.],
               [ case "${enableval}" in
@@ -80,6 +79,7 @@ if test x${enable_libhagraph} = xyes; then
 	AC_DEFINE(ENABLE_LIBHAGRAPH, 1, [Enable Graph Drawing Support])
 
 fi
+AM_CONDITIONAL(ENABLE_LIBHAGRAPH, test x$enable_libhagraph = xyes)
 
 AC_ARG_ENABLE(libhac,
               [  --disable-libhac			Home automation client support.],
@@ -97,6 +97,8 @@ if test x${enable_libhac} = xyes; then
 	AC_DEFINE(ENABLE_LIBHAC, 1, [Enable Home Automation Client Support])
 
 fi
+AM_CONDITIONAL(ENABLE_LIBHAC, test x$enable_libhac = xyes)
+
 
 AC_OUTPUT(Makefile src/Makefile)
 

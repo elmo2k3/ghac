@@ -1,15 +1,28 @@
 bin_PROGRAMS = ghac
 
-ghac_SOURCES = config.c\
+ghac_SOURCES = configfile.c\
 	ghac.c\
 	graph_view.c
 
-LIBS = @libglade_LIBS@ @libhagraph_LIBS@ @libhac_LIBS@ -export-dynamic
+LIBS = @libglade_LIBS@ -export-dynamic
+AM_CFLAGS = @CFLAGS@ @libglade_CFLAGS@
 
+if ENABLE_LIBHAGRAPH
+LIBS+=@libhagraph_LIBS@
+AM_CFLAGS+=@libhagraph_CFLAGS@
 if WIN32
-LIBS += -lmysql -lws2_32 -lpthreadGC2
+LIBS+= -lmysql
 else
-LIBS += -lmysqlclient
+LIBS+= -lmysqlclient
+endif
 endif
 
-AM_CFLAGS = @CFLAGS@ @libglade_CFLAGS@ @libhagraph_CFLAGS@ @libhac_CFLAGS@
+if ENABLE_LIBHAC
+LIBS+=@libhac_LIBS@
+AM_CFLAGS+=@libhac_CFLAGS@
+endif
+
+if WIN32
+LIBS += -lws2_32 -lpthreadGC2
+endif
+

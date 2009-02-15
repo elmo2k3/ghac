@@ -6,13 +6,19 @@
 #include <pthread.h>
 #include <time.h>
 #include <string.h>
+#include <config.h>
+#include <stdint.h>
 
+#ifdef ENABLE_LIBHAC
 #include <libhac/libhac.h>
+#endif
+#ifdef ENABLE_LIBHAGRAPH
 #include <libhagraph/libhagraph.h>
+#endif
 
 #include "ghac.h"
 #include "graph_view.h"
-#include "config.h"
+#include "configfile.h"
 
 	
 #define SECONDS_PER_DAY (60*60*24)
@@ -29,7 +35,9 @@ static uint8_t relaisState;
 GtkWidget *errorPopup;
 GtkWidget *widget;
 
+#ifdef ENABLE_LIBHAGRAPH
 struct _graph_data graph;
+#endif
 static int yet_drawed = 0;
 
 gint exit_handler(GtkWidget *widget, GdkEvent *event, gpointer data)
@@ -44,9 +52,13 @@ G_MODULE_EXPORT void ghac_end(GtkWidget *widget, gpointer daten)
 	char location[1024];
 	sprintf(location,GHAC_CONFIG,home);
 	saveConfig(location);
+#ifdef ENABLE_LIBHAC
 	closeLibHac();
+#endif
 	gtk_main_quit();
 }
+
+#ifdef ENABLE_LIBHAC
 
 void updateTemperatures()
 {
@@ -166,122 +178,6 @@ void updateModules()
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"scrobbler_button")), 0);
 }
 
-
-G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpointer data)
-{
-	char date[20];
-	char from[13], to[13];
-	int view;
-	int modul[6], sensor[6], numGraphs=0;
-	unsigned int day, month, year;
-
-	if(graph_bo_out)
-	{
-		modul[numGraphs] = 3;
-		sensor[numGraphs] = 1;
-		numGraphs++;
-	}
-	if(graph_bo_wohn)
-	{
-		modul[numGraphs] = 3;
-		sensor[numGraphs] = 0;
-		numGraphs++;
-	}
-	if(graph_oe_out)
-	{
-		modul[numGraphs] = 4;
-		sensor[numGraphs] = 0;
-		numGraphs++;
-	}
-	if(graph_oe_vor)
-	{
-		modul[numGraphs] = 2;
-		sensor[numGraphs] = 0;
-		numGraphs++;
-	}
-	if(graph_oe_rueck)
-	{
-		modul[numGraphs] = 2;
-		sensor[numGraphs] = 1;
-		numGraphs++;
-	}
-	if(graph_oe_wohn)
-	{
-		modul[numGraphs] = 4;
-		sensor[numGraphs] = 1;
-		numGraphs++;
-	}
-
-	if(!yet_drawed)
-	{
-		int i;
-		gtk_calendar_get_date(GTK_CALENDAR(glade_xml_get_widget(xml,"calendar")),
-					&year, &month, &day);
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_day"))))
-			view = TB_DAY;
-		else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_week"))))
-			view = TB_WEEK;
-		else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_month"))))
-			view = TB_MONTH;
-		else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_year"))))
-			view = TB_YEAR;
-
-		sprintf(date,"%d-%02d-%02d",year,month+1,day);
-		transformDate(from,to,date,view);
-
-		printf("from: %s to: %s view: %d\n",from,to,view);
-		initGraph(&graph, from, to);
-		for(i=0; i< numGraphs; i++)
-		{
-			addGraphData(&graph, modul[i], sensor[i],
-				config.graph_host,
-				config.graph_user,
-				config.graph_password,
-				config.graph_database,
-				config.graph_database_ws2000);
-		}
-		drawGraphGtk(widget, &graph); 
-//		drawGraphPng("foo.png", &graph, 2000,800); 
-		yet_drawed = 1;
-	}
-	else
-		drawGraphGtk(widget, &graph);
-}
-
-G_MODULE_EXPORT void on_button_draw_clicked(GtkButton *button)
-{
-	freeGraph(&graph);
-	yet_drawed = 0;
-//	setDrawGraph();
-	gtk_widget_queue_draw(glade_xml_get_widget(xml,"drawingarea2"));
-	//updateGraph();
-}
-
-static gboolean updateRgb()
-{
-	int i;
-	gchar smoothness_buf[2];
-	gchar slider_name[64];
-
-	struct _hadState hadState;
-
-	getHadState(&hadState);
-	
-	for(i=0;i<3;i++)
-	{
-		g_sprintf(smoothness_buf,"%d",hadState.rgbModuleValues[i].smoothness);
-		g_sprintf(slider_name,"vscale_red%d",i);
-		gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,slider_name)),hadState.rgbModuleValues[i].red);
-		g_sprintf(slider_name,"vscale_green%d",i);
-		gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,slider_name)),hadState.rgbModuleValues[i].green);
-		g_sprintf(slider_name,"vscale_blue%d",i);
-		gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,slider_name)),hadState.rgbModuleValues[i].blue);
-		gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness")),smoothness_buf);
-	}
-	
-	return 1;
-}
-
 G_MODULE_EXPORT void on_ledmatrix_toggled(GtkToggleButton *toggle_button)
 {
 	if(gtk_toggle_button_get_active(toggle_button))
@@ -385,6 +281,150 @@ G_MODULE_EXPORT void on_button_send_clicked(GtkWidget *widget)
 
 }
 
+static gboolean updateRgb()
+{
+	int i;
+	gchar smoothness_buf[2];
+	gchar slider_name[64];
+
+	struct _hadState hadState;
+
+	getHadState(&hadState);
+	
+	for(i=0;i<3;i++)
+	{
+		g_sprintf(smoothness_buf,"%d",hadState.rgbModuleValues[i].smoothness);
+		g_sprintf(slider_name,"vscale_red%d",i);
+		gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,slider_name)),hadState.rgbModuleValues[i].red);
+		g_sprintf(slider_name,"vscale_green%d",i);
+		gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,slider_name)),hadState.rgbModuleValues[i].green);
+		g_sprintf(slider_name,"vscale_blue%d",i);
+		gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,slider_name)),hadState.rgbModuleValues[i].blue);
+		gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness")),smoothness_buf);
+	}
+	
+	return 1;
+}
+
+void updater()
+{
+	static int counter=10;
+
+	while(1)
+	{
+		updateRgb();
+		updateRelais();
+		updateModules();
+		updateVoltage();
+		updateTemperatures();
+
+		if(counter++ == 10)
+		{
+			updateThermostat();
+			printf("update temperature\n");
+			counter=0;
+		}
+		g_usleep(10000000);
+		printf("update\n");
+	}
+}
+
+#endif //ENABLE_LIBHAC
+
+G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpointer data)
+{
+	char date[20];
+	char from[13], to[13];
+	int view;
+	int modul[6], sensor[6], numGraphs=0;
+	unsigned int day, month, year;
+
+	if(graph_bo_out)
+	{
+		modul[numGraphs] = 3;
+		sensor[numGraphs] = 1;
+		numGraphs++;
+	}
+	if(graph_bo_wohn)
+	{
+		modul[numGraphs] = 3;
+		sensor[numGraphs] = 0;
+		numGraphs++;
+	}
+	if(graph_oe_out)
+	{
+		modul[numGraphs] = 4;
+		sensor[numGraphs] = 0;
+		numGraphs++;
+	}
+	if(graph_oe_vor)
+	{
+		modul[numGraphs] = 2;
+		sensor[numGraphs] = 0;
+		numGraphs++;
+	}
+	if(graph_oe_rueck)
+	{
+		modul[numGraphs] = 2;
+		sensor[numGraphs] = 1;
+		numGraphs++;
+	}
+	if(graph_oe_wohn)
+	{
+		modul[numGraphs] = 4;
+		sensor[numGraphs] = 1;
+		numGraphs++;
+	}
+#ifdef ENABLE_LIBHAGRAPH
+	if(!yet_drawed)
+	{
+		int i;
+		gtk_calendar_get_date(GTK_CALENDAR(glade_xml_get_widget(xml,"calendar")),
+					&year, &month, &day);
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_day"))))
+			view = TB_DAY;
+		else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_week"))))
+			view = TB_WEEK;
+		else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_month"))))
+			view = TB_MONTH;
+		else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_year"))))
+			view = TB_YEAR;
+
+		sprintf(date,"%d-%02d-%02d",year,month+1,day);
+		transformDate(from,to,date,view);
+
+		printf("from: %s to: %s view: %d\n",from,to,view);
+		initGraph(&graph, from, to);
+		for(i=0; i< numGraphs; i++)
+		{
+			addGraphData(&graph, modul[i], sensor[i],
+				config.graph_host,
+				config.graph_user,
+				config.graph_password,
+				config.graph_database,
+				config.graph_database_ws2000);
+		}
+		drawGraphGtk(widget, &graph); 
+//		drawGraphPng("foo.png", &graph, 2000,800); 
+		yet_drawed = 1;
+	}
+	else
+		drawGraphGtk(widget, &graph);
+#endif //ENABLE_LIBHAGRAPH
+}
+
+G_MODULE_EXPORT void on_button_draw_clicked(GtkButton *button)
+{
+#ifdef ENABLE_LIBHAGRAPH
+	freeGraph(&graph);
+#endif
+	yet_drawed = 0;
+//	setDrawGraph();
+	gtk_widget_queue_draw(glade_xml_get_widget(xml,"drawingarea2"));
+	//updateGraph();
+}
+
+
 G_MODULE_EXPORT void on_button_config_set_clicked(GtkWidget *widget)
 {
 	int tempint;
@@ -403,6 +443,7 @@ G_MODULE_EXPORT void on_button_config_set_clicked(GtkWidget *widget)
 	strncpy(config.graph_host,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_host"))), 99);
 	config.graph_host[99] = 0;
 	tempint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_had_activated"))); 
+#ifdef ENABLE_LIBHAC
 	if(tempint != config.had_activated)
 	{
 		if(tempint)
@@ -419,8 +460,9 @@ G_MODULE_EXPORT void on_button_config_set_clicked(GtkWidget *widget)
 			gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"fixed2")));
 			closeLibHac();
 		}
-		config.had_activated = tempint;
 	}
+#endif
+	config.had_activated = tempint;
 	tempint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_graph_activated"))); 
 	if(tempint != config.graph_activated)
 	{
@@ -447,29 +489,6 @@ G_MODULE_EXPORT void on_button_config_set_clicked(GtkWidget *widget)
 		else
 			gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"fixed2")));
 		config.thermostat_activated = tempint;
-	}
-}
-
-void updater()
-{
-	static int counter=10;
-
-	while(1)
-	{
-		updateRgb();
-		updateRelais();
-		updateModules();
-		updateVoltage();
-		updateTemperatures();
-
-		if(counter++ == 10)
-		{
-			updateThermostat();
-			printf("update temperature\n");
-			counter=0;
-		}
-		g_usleep(10000000);
-		printf("update\n");
 	}
 }
 
@@ -563,10 +582,10 @@ int main(int argc, char *argv[])
 	
 	time(&rawtime);
 	today = localtime(&rawtime);
-
+#ifdef ENABLE_LIBHAC
 	if(config.had_activated)
 		initLibHac(server_ip);
-
+#endif
 	gtk_init(&argc, &argv);
 #ifdef _WIN32
 	xml = glade_xml_new("C:\\Programme\\ghac\\ghac.glade", NULL, NULL);
@@ -608,7 +627,9 @@ int main(int argc, char *argv[])
 	if(!config.graph_activated)
 		gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"vbox2")));
 	loadConfigToGui();
+#ifdef ENABLE_LIBHAC
 	pthread_create(&update_thread, NULL, (void*)&updater, NULL);
+#endif
 	gtk_main();
 
 	return 0;

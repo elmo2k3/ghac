@@ -1,11 +1,11 @@
 #!/bin/sh
 
-echo "running autoheader"
-autoheader || exit 1
 echo "running aclocal"
 aclocal || exit 1
 echo "running libtoolize"
 libtoolize --force || exit 1
+echo "running autoheader"
+autoheader || exit 1
 echo "running automake"
 automake -a -c || exit 1
 echo "running autoconf"

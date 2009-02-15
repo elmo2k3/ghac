@@ -27,8 +27,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <config.h>
 
-#include "config.h"
+#include "configfile.h"
 
 #define NUM_PARAMS 12
 static char *config_params[NUM_PARAMS] = { "had_activated","had_ip","had_port","graph_activated",
@@ -71,16 +72,26 @@ int loadConfig(char *conf)
 	/* default values */
 	config.had_port = CONFIG_DEFAULT_HAD_PORT;
 	config.graph_port = CONFIG_DEFAULT_GRAPH_PORT;
-	config.had_activated = CONFIG_DEFAULT_HAD_ACTIVATED;
 	strcpy(config.had_ip, CONFIG_DEFAULT_HAD_IP);
+#ifdef ENABLE_LIBHAC
+	config.had_activated = CONFIG_DEFAULT_HAD_ACTIVATED;
+	config.thermostat_activated = CONFIG_DEFAULT_THERMOSTAT_ACTIVATED;
+	config.had_control_activated = CONFIG_DEFAULT_CONTROL_ACTIVATED;
+#else
+	config.had_activated = 0;
+	config.thermostat_activated = 0;
+	config.had_control_activated = 0;
+#endif
+#ifdef ENABLE_LIBHAGRAPH
 	config.graph_activated = CONFIG_DEFAULT_GRAPH_ACTIVATED;
+#else
+	config.graph_activated = 0;
+#endif
 	strcpy(config.graph_database, CONFIG_DEFAULT_GRAPH_DATABASE);
 	strcpy(config.graph_host, CONFIG_DEFAULT_GRAPH_HOST);
 	strcpy(config.graph_user, CONFIG_DEFAULT_GRAPH_USER);
 	strcpy(config.graph_password, CONFIG_DEFAULT_GRAPH_PASSWORD);
 	strcpy(config.graph_database_ws2000, CONFIG_DEFAULT_GRAPH_DATABASE_WS2000);
-	config.thermostat_activated = CONFIG_DEFAULT_THERMOSTAT_ACTIVATED;
-	config.had_control_activated = CONFIG_DEFAULT_CONTROL_ACTIVATED;
 
 	config_file = fopen(conf,"r");
 	if(!config_file)
