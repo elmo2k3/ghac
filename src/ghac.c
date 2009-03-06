@@ -405,8 +405,10 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 				config.graph_database_ws2000);
 		}
 		drawGraphGtk(widget, &graph); 
+
 //		drawGraphPng("foo.png", &graph, 2000,800); 
 		yet_drawed = 1;
+
 	}
 	else
 		drawGraphGtk(widget, &graph);
@@ -631,6 +633,6 @@ int main(int argc, char *argv[])
 	pthread_create(&update_thread, NULL, (void*)&updater, NULL);
 #endif
 	gtk_main();
-
+	drawG
 	return 0;
 }
