@@ -501,7 +501,7 @@ G_MODULE_EXPORT void trayIconClicked(GtkWidget *foo, gpointer data)
 	else
 	{
 		gtk_window_deiconify(GTK_WINDOW(widget));
-		gtk_widget_show_all(GTK_WIDGET(widget));
+		gtk_widget_show(GTK_WIDGET(widget));
 	}
 }
 
@@ -633,6 +633,5 @@ int main(int argc, char *argv[])
 	pthread_create(&update_thread, NULL, (void*)&updater, NULL);
 #endif
 	gtk_main();
-	drawG
 	return 0;
 }
