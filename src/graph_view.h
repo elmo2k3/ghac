@@ -15,7 +15,15 @@ extern gboolean graph_oe_out,
      graph_bo_out,
      graph_bo_wohn,
      graph_oe_vor,
-     graph_oe_rueck;
+     graph_oe_rueck,
+     graph_bo_hk_soll,
+     graph_bo_hk_ist,
+     graph_bo_hk_ventil,
+     graph_bo_hk_spannung,
+     graph_oe_hk_soll,
+     graph_oe_hk_ist,
+     graph_oe_hk_ventil,
+     graph_oe_hk_spannung;
 
 #endif
 

@@ -336,7 +336,7 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 	char date[20];
 	char from[13], to[13];
 	int view;
-	int modul[6], sensor[6], numGraphs=0;
+	int modul[15], sensor[15], numGraphs=0;
 	unsigned int day, month, year;
 
 	if(graph_bo_out)
@@ -373,6 +373,54 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 	{
 		modul[numGraphs] = 4;
 		sensor[numGraphs] = 1;
+		numGraphs++;
+	}
+	if(graph_bo_hk_soll)
+	{
+		modul[numGraphs] = 5;
+		sensor[numGraphs] = 1;
+		numGraphs++;
+	}
+	if(graph_bo_hk_ist)
+	{
+		modul[numGraphs] = 5;
+		sensor[numGraphs] = 0;
+		numGraphs++;
+	}
+	if(graph_bo_hk_ventil)
+	{
+		modul[numGraphs] = 5;
+		sensor[numGraphs] = 2;
+		numGraphs++;
+	}
+	if(graph_bo_hk_spannung)
+	{
+		modul[numGraphs] = 5;
+		sensor[numGraphs] = 3;
+		numGraphs++;
+	}
+	if(graph_oe_hk_soll)
+	{
+		modul[numGraphs] = 6;
+		sensor[numGraphs] = 1;
+		numGraphs++;
+	}
+	if(graph_oe_hk_ist)
+	{
+		modul[numGraphs] = 6;
+		sensor[numGraphs] = 0;
+		numGraphs++;
+	}
+	if(graph_oe_hk_ventil)
+	{
+		modul[numGraphs] = 6;
+		sensor[numGraphs] = 2;
+		numGraphs++;
+	}
+	if(graph_oe_hk_spannung)
+	{
+		modul[numGraphs] = 6;
+		sensor[numGraphs] = 3;
 		numGraphs++;
 	}
 #ifdef ENABLE_LIBHAGRAPH

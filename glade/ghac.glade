@@ -270,15 +270,41 @@
                             <property name="n_rows">3</property>
                             <property name="n_columns">2</property>
                             <child>
-                              <widget class="GtkLabel" id="label_wohnzimmer">
+                              <widget class="GtkLabel" id="label_voltage">
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">label</property>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>
                                 <property name="right_attach">2</property>
-                                <property name="top_attach">1</property>
-                                <property name="bottom_attach">2</property>
+                                <property name="top_attach">2</property>
+                                <property name="bottom_attach">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label13">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Spannung</property>
+                              </widget>
+                              <packing>
+                                <property name="top_attach">2</property>
+                                <property name="bottom_attach">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label4">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Draussen</property>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label_outside">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">label</property>
+                              </widget>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="right_attach">2</property>
                               </packing>
                             </child>
                             <child>
@@ -292,41 +318,15 @@
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="label_outside">
+                              <widget class="GtkLabel" id="label_wohnzimmer">
                                 <property name="visible">True</property>
                                 <property name="label" translatable="yes">label</property>
                               </widget>
                               <packing>
                                 <property name="left_attach">1</property>
                                 <property name="right_attach">2</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="label4">
-                                <property name="visible">True</property>
-                                <property name="label" translatable="yes">Draussen</property>
-                              </widget>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="label13">
-                                <property name="visible">True</property>
-                                <property name="label" translatable="yes">Spannung</property>
-                              </widget>
-                              <packing>
-                                <property name="top_attach">2</property>
-                                <property name="bottom_attach">3</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="label_voltage">
-                                <property name="visible">True</property>
-                                <property name="label" translatable="yes">label</property>
-                              </widget>
-                              <packing>
-                                <property name="left_attach">1</property>
-                                <property name="right_attach">2</property>
-                                <property name="top_attach">2</property>
-                                <property name="bottom_attach">3</property>
+                                <property name="top_attach">1</property>
+                                <property name="bottom_attach">2</property>
                               </packing>
                             </child>
                           </widget>
@@ -549,103 +549,6 @@
                   <widget class="GtkFixed" id="fixed3">
                     <property name="visible">True</property>
                     <child>
-                      <widget class="GtkCheckButton" id="checkbutton_bo_out">
-                        <property name="width_request">189</property>
-                        <property name="height_request">40</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="label" translatable="yes">Bochum draussen</property>
-                        <property name="use_underline">True</property>
-                        <property name="response_id">0</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_checkbutton_bo_out_toggled"/>
-                      </widget>
-                    </child>
-                    <child>
-                      <widget class="GtkCheckButton" id="checkbutton_oe_out">
-                        <property name="width_request">159</property>
-                        <property name="height_request">40</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="label" translatable="yes">O.-E. draussen</property>
-                        <property name="use_underline">True</property>
-                        <property name="response_id">0</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_checkbutton_oe_out_toggled"/>
-                      </widget>
-                      <packing>
-                        <property name="x">210</property>
-                        <property name="y">88</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkCheckButton" id="checkbutton_bo_wohn">
-                        <property name="width_request">210</property>
-                        <property name="height_request">40</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="label" translatable="yes">Bochum Wohnzimmer</property>
-                        <property name="use_underline">True</property>
-                        <property name="response_id">0</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_checkbutton_bo_wohn_toggled"/>
-                      </widget>
-                      <packing>
-                        <property name="y">44</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkCheckButton" id="checkbutton_oe_wohn">
-                        <property name="width_request">195</property>
-                        <property name="height_request">44</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="label" translatable="yes">O.-E. Wohnzimmer</property>
-                        <property name="use_underline">True</property>
-                        <property name="response_id">0</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_checkbutton_oe_wohn_toggled"/>
-                      </widget>
-                      <packing>
-                        <property name="y">88</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkCheckButton" id="checkbutton_oe_vor">
-                        <property name="width_request">157</property>
-                        <property name="height_request">40</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="label" translatable="yes">O.-E. Vorlauf</property>
-                        <property name="use_underline">True</property>
-                        <property name="response_id">0</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_checkbutton_oe_vor_toggled"/>
-                      </widget>
-                      <packing>
-                        <property name="x">210</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkCheckButton" id="checkbutton_oe_rueck">
-                        <property name="width_request">155</property>
-                        <property name="height_request">40</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="label" translatable="yes">O.-E. Rücklauf</property>
-                        <property name="use_underline">True</property>
-                        <property name="response_id">0</property>
-                        <property name="draw_indicator">True</property>
-                        <signal name="toggled" handler="on_checkbutton_oe_rueck_toggled"/>
-                      </widget>
-                      <packing>
-                        <property name="x">210</property>
-                        <property name="y">44</property>
-                      </packing>
-                    </child>
-                    <child>
                       <widget class="GtkButton" id="button_draw">
                         <property name="width_request">100</property>
                         <property name="height_request">41</property>
@@ -657,14 +560,14 @@
                         <signal name="clicked" handler="on_button_draw_clicked"/>
                       </widget>
                       <packing>
-                        <property name="x">220</property>
-                        <property name="y">136</property>
+                        <property name="x">372</property>
+                        <property name="y">144</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkRadioButton" id="radio_day">
                         <property name="width_request">100</property>
-                        <property name="height_request">44</property>
+                        <property name="height_request">30</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Tag</property>
@@ -679,7 +582,7 @@
                     <child>
                       <widget class="GtkRadioButton" id="radio_week">
                         <property name="width_request">100</property>
-                        <property name="height_request">40</property>
+                        <property name="height_request">30</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Woche</property>
@@ -690,13 +593,13 @@
                       </widget>
                       <packing>
                         <property name="x">371</property>
-                        <property name="y">44</property>
+                        <property name="y">35</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkRadioButton" id="radio_month">
                         <property name="width_request">100</property>
-                        <property name="height_request">44</property>
+                        <property name="height_request">30</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Monat</property>
@@ -707,13 +610,13 @@
                       </widget>
                       <packing>
                         <property name="x">371</property>
-                        <property name="y">88</property>
+                        <property name="y">70</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkRadioButton" id="radio_year">
                         <property name="width_request">100</property>
-                        <property name="height_request">44</property>
+                        <property name="height_request">30</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="label" translatable="yes">Jahr</property>
@@ -724,8 +627,292 @@
                       </widget>
                       <packing>
                         <property name="x">371</property>
-                        <property name="y">132</property>
+                        <property name="y">105</property>
                       </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkNotebook" id="notebook2">
+                        <property name="width_request">350</property>
+                        <property name="height_request">207</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <child>
+                          <widget class="GtkFixed" id="fixed1">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkCheckButton" id="checkbutton_bo_out">
+                                <property name="width_request">100</property>
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Draussen</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_checkbutton_bo_out_toggled"/>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkCheckButton" id="checkbutton_bo_wohn">
+                                <property name="width_request">153</property>
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Wohnzimmer</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_checkbutton_bo_wohn_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="y">30</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkCheckButton" id="checkbutton_bo_hk_soll">
+                                <property name="width_request">164</property>
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Heizkörper soll</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_checkbutton_bo_hk_soll_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="x">170</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkCheckButton" id="checkbutton_bo_hk_ist">
+                                <property name="width_request">140</property>
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Heizkörper ist</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_checkbutton_bo_hk_ist_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="x">170</property>
+                                <property name="y">30</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkCheckButton" id="checkbutton_bo_hk_ventil">
+                                <property name="width_request">165</property>
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Heizkörper Ventil</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_checkbutton_bo_hk_ventil_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="x">170</property>
+                                <property name="y">60</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkCheckButton" id="checkbutton_bo_hk_spannung">
+                                <property name="width_request">188</property>
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Ventil Spannung</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_checkbutton_bo_hk_spannung_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="x">170</property>
+                                <property name="y">90</property>
+                              </packing>
+                            </child>
+                          </widget>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label9">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Bochum</property>
+                          </widget>
+                          <packing>
+                            <property name="type">tab</property>
+                            <property name="tab_fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkFixed" id="fixed5">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkCheckButton" id="checkbutton_oe_wohn">
+                                <property name="width_request">146</property>
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Wohnzimmer</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_checkbutton_oe_wohn_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="y">30</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkCheckButton" id="checkbutton_oe_out">
+                                <property name="width_request">100</property>
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Draussen</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="active">True</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_checkbutton_oe_out_toggled"/>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkCheckButton" id="checkbutton_oe_hk_soll">
+                                <property name="width_request">150</property>
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Heizkörper soll</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_checkbutton_oe_hk_soll_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="x">170</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkCheckButton" id="checkbutton_oe_hk_ist">
+                                <property name="width_request">150</property>
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Heizkörper ist</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_checkbutton_oe_hk_ist_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="x">170</property>
+                                <property name="y">30</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkCheckButton" id="checkbutton_oe_hk_ventil">
+                                <property name="width_request">170</property>
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Heizkörper Ventil</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_checkbutton_oe_hk_ventil_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="x">170</property>
+                                <property name="y">60</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkCheckButton" id="checkbutton_oe_hk_spannung">
+                                <property name="width_request">150</property>
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Ventil Spannung</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_checkbutton_oe_hk_spannung_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="x">170</property>
+                                <property name="y">90</property>
+                              </packing>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label10">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Oer-Erkenschwick</property>
+                          </widget>
+                          <packing>
+                            <property name="type">tab</property>
+                            <property name="position">1</property>
+                            <property name="tab_fill">False</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkFixed" id="fixed4">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkCheckButton" id="checkbutton_oe_rueck">
+                                <property name="width_request">323</property>
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Rücklauf</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_checkbutton_oe_rueck_toggled"/>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkCheckButton" id="checkbutton_oe_vor">
+                                <property name="width_request">155</property>
+                                <property name="height_request">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="label" translatable="yes">Vorlauf</property>
+                                <property name="use_underline">True</property>
+                                <property name="response_id">0</property>
+                                <property name="draw_indicator">True</property>
+                                <signal name="toggled" handler="on_checkbutton_oe_vor_toggled"/>
+                              </widget>
+                              <packing>
+                                <property name="y">30</property>
+                              </packing>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label11">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Heizung O.-E.</property>
+                          </widget>
+                          <packing>
+                            <property name="type">tab</property>
+                            <property name="position">2</property>
+                            <property name="tab_fill">False</property>
+                          </packing>
+                        </child>
+                      </widget>
                     </child>
                   </widget>
                 </child>
@@ -787,19 +974,83 @@
                 <property name="row_spacing">2</property>
                 <property name="homogeneous">True</property>
                 <child>
-                  <widget class="GtkComboBox" id="combobox_mode">
+                  <widget class="GtkLabel" id="label21">
                     <property name="visible">True</property>
-                    <property name="items" translatable="yes">Manuell
-Automatisch</property>
-                    <signal name="changed" handler="thermostat_set_mode"/>
+                    <property name="label" translatable="yes">Modus</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">4</property>
+                    <property name="bottom_attach">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label_bat">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">
+</property>
                   </widget>
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="right_attach">2</property>
-                    <property name="top_attach">4</property>
-                    <property name="bottom_attach">5</property>
-                    <property name="y_options">GTK_EXPAND</property>
+                    <property name="top_attach">3</property>
+                    <property name="bottom_attach">4</property>
                   </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label_valve">
+                    <property name="visible">True</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label_t_is">
+                    <property name="visible">True</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label19">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Batteriespannung</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">3</property>
+                    <property name="bottom_attach">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label18">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Ventilöffnung</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label17">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Temperatur soll</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label16">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Temperatur ist</property>
+                  </widget>
                 </child>
                 <child>
                   <widget class="GtkComboBox" id="combobox_temperature">
@@ -868,82 +1119,18 @@ Automatisch</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="label16">
+                  <widget class="GtkComboBox" id="combobox_mode">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Temperatur ist</property>
-                  </widget>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label17">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Temperatur soll</property>
-                  </widget>
-                  <packing>
-                    <property name="top_attach">1</property>
-                    <property name="bottom_attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label18">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Ventilöffnung</property>
-                  </widget>
-                  <packing>
-                    <property name="top_attach">2</property>
-                    <property name="bottom_attach">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label19">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Batteriespannung</property>
-                  </widget>
-                  <packing>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label_t_is">
-                    <property name="visible">True</property>
+                    <property name="items" translatable="yes">Manuell
+Automatisch</property>
+                    <signal name="changed" handler="thermostat_set_mode"/>
                   </widget>
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="right_attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label_valve">
-                    <property name="visible">True</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">2</property>
-                    <property name="bottom_attach">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label_bat">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">
-</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label21">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Modus</property>
-                  </widget>
-                  <packing>
                     <property name="top_attach">4</property>
                     <property name="bottom_attach">5</property>
+                    <property name="y_options">GTK_EXPAND</property>
                   </packing>
                 </child>
               </widget>
@@ -975,7 +1162,7 @@ Automatisch</property>
                 <property name="n_rows">12</property>
                 <property name="n_columns">2</property>
                 <child>
-                  <widget class="GtkCheckButton" id="checkbutton_thermostat_activated">
+                  <widget class="GtkCheckButton" id="checkbutton_graph_activated">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="response_id">0</property>
@@ -984,8 +1171,232 @@ Automatisch</property>
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="right_attach">2</property>
+                    <property name="top_attach">3</property>
+                    <property name="bottom_attach">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label24">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">had activated</property>
+                  </widget>
+                </child>
+                <child>
+                  <widget class="GtkCheckButton" id="checkbutton_had_activated">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="response_id">0</property>
+                    <property name="draw_indicator">True</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label25">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">had IP-Address</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label26">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">had port</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label27">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Graph activated</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">3</property>
+                    <property name="bottom_attach">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label28">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Graph database</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">4</property>
+                    <property name="bottom_attach">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label29">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Graph database ws2000</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">5</property>
+                    <property name="bottom_attach">6</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label30">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Graph mysql port</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">7</property>
+                    <property name="bottom_attach">8</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label31">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Graph mysql host</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">6</property>
+                    <property name="bottom_attach">7</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label32">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Graph mysql user</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">8</property>
+                    <property name="bottom_attach">9</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label33">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Graph mysql password</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">9</property>
+                    <property name="bottom_attach">10</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label34">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Control activated</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">10</property>
+                    <property name="bottom_attach">11</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label35">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Thermostat activated</property>
+                  </widget>
+                  <packing>
                     <property name="top_attach">11</property>
                     <property name="bottom_attach">12</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkEntry" id="entry_had_ip">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkEntry" id="entry_had_port">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkEntry" id="entry_graph_database">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">4</property>
+                    <property name="bottom_attach">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkEntry" id="entry_graph_ws2000">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">5</property>
+                    <property name="bottom_attach">6</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkEntry" id="entry_graph_host">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">6</property>
+                    <property name="bottom_attach">7</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkEntry" id="entry_graph_port">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">7</property>
+                    <property name="bottom_attach">8</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkEntry" id="entry_graph_user">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">8</property>
+                    <property name="bottom_attach">9</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkEntry" id="entry_graph_password">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">9</property>
+                    <property name="bottom_attach">10</property>
                   </packing>
                 </child>
                 <child>
@@ -1003,241 +1414,17 @@ Automatisch</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkEntry" id="entry_graph_password">
+                  <widget class="GtkCheckButton" id="checkbutton_thermostat_activated">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="response_id">0</property>
+                    <property name="draw_indicator">True</property>
                   </widget>
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="right_attach">2</property>
-                    <property name="top_attach">9</property>
-                    <property name="bottom_attach">10</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkEntry" id="entry_graph_user">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">8</property>
-                    <property name="bottom_attach">9</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkEntry" id="entry_graph_port">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">7</property>
-                    <property name="bottom_attach">8</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkEntry" id="entry_graph_host">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">6</property>
-                    <property name="bottom_attach">7</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkEntry" id="entry_graph_ws2000">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">5</property>
-                    <property name="bottom_attach">6</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkEntry" id="entry_graph_database">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">4</property>
-                    <property name="bottom_attach">5</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkEntry" id="entry_had_port">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">2</property>
-                    <property name="bottom_attach">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkEntry" id="entry_had_ip">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">1</property>
-                    <property name="bottom_attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label35">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Thermostat activated</property>
-                  </widget>
-                  <packing>
                     <property name="top_attach">11</property>
                     <property name="bottom_attach">12</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label34">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Control activated</property>
-                  </widget>
-                  <packing>
-                    <property name="top_attach">10</property>
-                    <property name="bottom_attach">11</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label33">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Graph mysql password</property>
-                  </widget>
-                  <packing>
-                    <property name="top_attach">9</property>
-                    <property name="bottom_attach">10</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label32">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Graph mysql user</property>
-                  </widget>
-                  <packing>
-                    <property name="top_attach">8</property>
-                    <property name="bottom_attach">9</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label31">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Graph mysql host</property>
-                  </widget>
-                  <packing>
-                    <property name="top_attach">6</property>
-                    <property name="bottom_attach">7</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label30">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Graph mysql port</property>
-                  </widget>
-                  <packing>
-                    <property name="top_attach">7</property>
-                    <property name="bottom_attach">8</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label29">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Graph database ws2000</property>
-                  </widget>
-                  <packing>
-                    <property name="top_attach">5</property>
-                    <property name="bottom_attach">6</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label28">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Graph database</property>
-                  </widget>
-                  <packing>
-                    <property name="top_attach">4</property>
-                    <property name="bottom_attach">5</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label27">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Graph activated</property>
-                  </widget>
-                  <packing>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label26">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">had port</property>
-                  </widget>
-                  <packing>
-                    <property name="top_attach">2</property>
-                    <property name="bottom_attach">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label25">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">had IP-Address</property>
-                  </widget>
-                  <packing>
-                    <property name="top_attach">1</property>
-                    <property name="bottom_attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkCheckButton" id="checkbutton_had_activated">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="response_id">0</property>
-                    <property name="draw_indicator">True</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label24">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">had activated</property>
-                  </widget>
-                </child>
-                <child>
-                  <widget class="GtkCheckButton" id="checkbutton_graph_activated">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="response_id">0</property>
-                    <property name="draw_indicator">True</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
                   </packing>
                 </child>
               </widget>
