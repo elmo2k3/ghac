@@ -25,6 +25,7 @@
 
 
 pthread_t update_thread, network_thread;
+GtkStatusIcon *trayIcon=NULL;
 
 GladeXML *xml;
 
@@ -55,6 +56,10 @@ G_MODULE_EXPORT void ghac_end(GtkWidget *widget, gpointer daten)
 #ifdef ENABLE_LIBHAC
 	closeLibHac();
 #endif
+	if(trayIcon)
+	{
+		g_object_unref(trayIcon);
+	}
 	gtk_main_quit();
 }
 
@@ -612,7 +617,6 @@ G_MODULE_EXPORT void loadConfigToGui()
 
 int main(int argc, char *argv[])
 {
-	GtkStatusIcon *trayIcon;
 	time_t rawtime;
 	struct tm *today;
 
