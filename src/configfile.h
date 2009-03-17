@@ -50,6 +50,20 @@ struct _config
 	char graph_password[100];
 	int thermostat_activated;
 	int had_control_activated;
+	int graph_oe_out;
+	int graph_oe_wohn;
+	int graph_bo_out;
+	int graph_bo_wohn;
+	int graph_oe_vor;
+	int graph_oe_rueck;
+	int graph_bo_hk_soll;
+	int graph_bo_hk_ist;
+	int graph_bo_hk_ventil;
+	int graph_bo_hk_spannung;
+	int graph_oe_hk_soll;
+	int graph_oe_hk_ist;
+	int graph_oe_hk_ventil;
+	int graph_oe_hk_spannung;
 }config;
 
 /**

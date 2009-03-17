@@ -31,10 +31,13 @@
 
 #include "configfile.h"
 
-#define NUM_PARAMS 12
+#define NUM_PARAMS 26
 static char *config_params[NUM_PARAMS] = { "had_activated","had_ip","had_port","graph_activated",
 		"graph_database","graph_ws2000","graph_host","graph_port","graph_user","graph_password",
-		"thermostat_activated","had_control_activated"};
+		"thermostat_activated","had_control_activated","graph_oe_wohn","graph_bo_out",
+		"graph_bo_wohn","graph_oe_vor","graph_oe_rueck","graph_bo_hk_soll","graph_bo_hk_ist",
+		"graph_bo_hk_ventil","graph_bo_hk_spannung","graph_oe_hk_soll","graph_oe_hk_ist",
+		"graph_oe_hk_ventil","graph_oe_hk_spannung","graph_oe_out"};
 
 int saveConfig(char *conf)
 {
@@ -53,6 +56,20 @@ int saveConfig(char *conf)
 	fprintf(config_file,"graph_user = %s\n",config.graph_user);
 	fprintf(config_file,"graph_password = %s\n",config.graph_password);
 	fprintf(config_file,"thermostat_activated = %d\n",config.thermostat_activated);
+	fprintf(config_file,"graph_oe_out = %d\n",config.graph_oe_out);
+	fprintf(config_file,"graph_oe_wohn = %d\n",config.graph_oe_wohn);
+	fprintf(config_file,"graph_bo_out = %d\n",config.graph_bo_out);
+	fprintf(config_file,"graph_bo_wohn = %d\n",config.graph_bo_wohn);
+	fprintf(config_file,"graph_oe_vor = %d\n",config.graph_oe_vor);
+	fprintf(config_file,"graph_oe_rueck = %d\n",config.graph_oe_rueck);
+	fprintf(config_file,"graph_bo_hk_soll = %d\n",config.graph_bo_hk_soll);
+	fprintf(config_file,"graph_bo_hk_ist = %d\n",config.graph_bo_hk_ist);
+	fprintf(config_file,"graph_bo_hk_ventil = %d\n",config.graph_bo_hk_ventil);
+	fprintf(config_file,"graph_bo_hk_spannung = %d\n",config.graph_bo_hk_spannung);
+	fprintf(config_file,"graph_oe_hk_soll = %d\n",config.graph_oe_hk_soll);
+	fprintf(config_file,"graph_oe_hk_ist = %d\n",config.graph_oe_hk_ist);
+	fprintf(config_file,"graph_oe_hk_ventil = %d\n",config.graph_oe_hk_ventil);
+	fprintf(config_file,"graph_oe_hk_spannung = %d\n",config.graph_oe_hk_spannung);
 
 	fclose(config_file);
 	return 1;
@@ -92,6 +109,8 @@ int loadConfig(char *conf)
 	strcpy(config.graph_user, CONFIG_DEFAULT_GRAPH_USER);
 	strcpy(config.graph_password, CONFIG_DEFAULT_GRAPH_PASSWORD);
 	strcpy(config.graph_database_ws2000, CONFIG_DEFAULT_GRAPH_DATABASE_WS2000);
+	config.graph_bo_out = 1;
+	config.graph_oe_out = 1;
 
 	config_file = fopen(conf,"r");
 	if(!config_file)
@@ -166,6 +185,34 @@ int loadConfig(char *conf)
 					break;
 				/* had control activated */
 				case 11: config.had_control_activated = atoi(value);
+					break;
+				case 12: config.graph_oe_wohn = atoi(value);
+					break;
+				case 13: config.graph_bo_out = atoi(value);
+					break;
+				case 14: config.graph_bo_wohn = atoi(value);
+					break;
+				case 15: config.graph_oe_vor = atoi(value);
+					break;
+				case 16: config.graph_oe_rueck = atoi(value);
+					break;
+				case 17: config.graph_bo_hk_soll = atoi(value);
+					break;
+				case 18: config.graph_bo_hk_ist = atoi(value);
+					break;
+				case 19: config.graph_bo_hk_ventil = atoi(value);
+					break;
+				case 20: config.graph_bo_hk_spannung = atoi(value);
+					break;
+				case 21: config.graph_oe_hk_soll = atoi(value);
+					break;
+				case 22: config.graph_oe_hk_ist = atoi(value);
+					break;
+				case 23: config.graph_oe_hk_ventil = atoi(value);
+					break;
+				case 24: config.graph_oe_hk_spannung = atoi(value);
+					break;
+				case 25: config.graph_oe_out = atoi(value);
 					break;
 			}
 		}

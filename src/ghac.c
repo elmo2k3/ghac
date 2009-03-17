@@ -344,85 +344,85 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 	int modul[15], sensor[15], numGraphs=0;
 	unsigned int day, month, year;
 
-	if(graph_bo_out)
+	if(config.graph_bo_out)
 	{
 		modul[numGraphs] = 3;
 		sensor[numGraphs] = 1;
 		numGraphs++;
 	}
-	if(graph_bo_wohn)
+	if(config.graph_bo_wohn)
 	{
 		modul[numGraphs] = 3;
 		sensor[numGraphs] = 0;
 		numGraphs++;
 	}
-	if(graph_oe_out)
+	if(config.graph_oe_out)
 	{
 		modul[numGraphs] = 4;
 		sensor[numGraphs] = 0;
 		numGraphs++;
 	}
-	if(graph_oe_vor)
+	if(config.graph_oe_vor)
 	{
 		modul[numGraphs] = 2;
 		sensor[numGraphs] = 0;
 		numGraphs++;
 	}
-	if(graph_oe_rueck)
+	if(config.graph_oe_rueck)
 	{
 		modul[numGraphs] = 2;
 		sensor[numGraphs] = 1;
 		numGraphs++;
 	}
-	if(graph_oe_wohn)
+	if(config.graph_oe_wohn)
 	{
 		modul[numGraphs] = 4;
 		sensor[numGraphs] = 1;
 		numGraphs++;
 	}
-	if(graph_bo_hk_soll)
+	if(config.graph_bo_hk_soll)
 	{
 		modul[numGraphs] = 5;
 		sensor[numGraphs] = 1;
 		numGraphs++;
 	}
-	if(graph_bo_hk_ist)
+	if(config.graph_bo_hk_ist)
 	{
 		modul[numGraphs] = 5;
 		sensor[numGraphs] = 0;
 		numGraphs++;
 	}
-	if(graph_bo_hk_ventil)
+	if(config.graph_bo_hk_ventil)
 	{
 		modul[numGraphs] = 5;
 		sensor[numGraphs] = 2;
 		numGraphs++;
 	}
-	if(graph_bo_hk_spannung)
+	if(config.graph_bo_hk_spannung)
 	{
 		modul[numGraphs] = 5;
 		sensor[numGraphs] = 3;
 		numGraphs++;
 	}
-	if(graph_oe_hk_soll)
+	if(config.graph_oe_hk_soll)
 	{
 		modul[numGraphs] = 6;
 		sensor[numGraphs] = 1;
 		numGraphs++;
 	}
-	if(graph_oe_hk_ist)
+	if(config.graph_oe_hk_ist)
 	{
 		modul[numGraphs] = 6;
 		sensor[numGraphs] = 0;
 		numGraphs++;
 	}
-	if(graph_oe_hk_ventil)
+	if(config.graph_oe_hk_ventil)
 	{
 		modul[numGraphs] = 6;
 		sensor[numGraphs] = 2;
 		numGraphs++;
 	}
-	if(graph_oe_hk_spannung)
+	if(config.graph_oe_hk_spannung)
 	{
 		modul[numGraphs] = 6;
 		sensor[numGraphs] = 3;
@@ -612,6 +612,34 @@ G_MODULE_EXPORT void loadConfigToGui()
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_control_activated")),1);
 	else
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_control_activated")),0);
+	if(config.graph_oe_out)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_out")),1);
+	if(config.graph_oe_wohn)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_wohn")),1);
+	if(config.graph_bo_out)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_bo_out")),1);
+	if(config.graph_bo_wohn)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_bo_wohn")),1);
+	if(config.graph_oe_vor)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_vor")),1);
+	if(config.graph_oe_rueck)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_rueck")),1);
+	if(config.graph_bo_hk_soll)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_bo_hk_soll")),1);
+	if(config.graph_bo_hk_ist)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_bo_hk_ist")),1);
+	if(config.graph_bo_hk_ventil)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_bo_hk_ventil")),1);
+	if(config.graph_bo_hk_spannung)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_bo_hk_spannung")),1);
+	if(config.graph_oe_hk_soll)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_hk_soll")),1);
+	if(config.graph_oe_hk_ist)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_hk_ist")),1);
+	if(config.graph_oe_hk_ventil)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_hk_ventil")),1);
+	if(config.graph_oe_hk_spannung)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_hk_spannung")),1);
 }
 	
 
@@ -630,9 +658,6 @@ int main(int argc, char *argv[])
 	{
 		server_ip = config.had_ip;
 	}
-
-	graph_bo_out = 1;
-	graph_oe_out = 1;
 	
 	time(&rawtime);
 	today = localtime(&rawtime);
