@@ -4,6 +4,10 @@ ghac_SOURCES = configfile.c\
 	ghac.c\
 	graph_view.c
 
+if WIN32
+ghac_LDADD = icon.o
+endif
+
 LIBS = @libglade_LIBS@ -export-dynamic @EXTRA_LDFLAGS@
 AM_CFLAGS = @CFLAGS@ @libglade_CFLAGS@ @EXTRA_CFLAGS@
 
