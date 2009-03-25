@@ -142,7 +142,6 @@ G_MODULE_EXPORT gint thermostat_set_temperature(GtkWidget *widget)
 	temperature = (int16_t)(gtk_combo_box_get_active(GTK_COMBO_BOX(glade_xml_get_widget(xml,"combobox_temperature"))) + 10) * 5;
 
 
-	printf("%d\n",temperature);
 	setHr20Temperature(temperature);
 	return 0;
 }
@@ -344,11 +343,9 @@ void updater()
 		if(counter++ == 10)
 		{
 			updateThermostat();
-			printf("update temperature\n");
 			counter=0;
 		}
 		g_usleep(10000000);
-		printf("update\n");
 	}
 }
 
@@ -446,6 +443,18 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 		sensor[numGraphs] = 3;
 		numGraphs++;
 	}
+	if(config.graph_bo_door)
+	{
+		modul[numGraphs] = 7;
+		sensor[numGraphs] = 1;
+		numGraphs++;
+	}
+	if(config.graph_bo_window)
+	{
+		modul[numGraphs] = 7;
+		sensor[numGraphs] = 2;
+		numGraphs++;
+	}
 #ifdef ENABLE_LIBHAGRAPH
 	if(!yet_drawed)
 	{
@@ -464,7 +473,6 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 		sprintf(date,"%d-%02d-%02d",year,month+1,day);
 		transformDate(from,to,date,view);
 
-		printf("from: %s to: %s view: %d\n",from,to,view);
 		initGraph(&graph, from, to);
 		for(i=0; i< numGraphs; i++)
 		{

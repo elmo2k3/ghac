@@ -64,6 +64,8 @@ struct _config
 	int graph_oe_hk_ist;
 	int graph_oe_hk_ventil;
 	int graph_oe_hk_spannung;
+	int graph_bo_door;
+	int graph_bo_window;
 }config;
 
 /**

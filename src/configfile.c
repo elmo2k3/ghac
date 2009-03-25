@@ -31,13 +31,13 @@
 
 #include "configfile.h"
 
-#define NUM_PARAMS 26
+#define NUM_PARAMS 28
 static char *config_params[NUM_PARAMS] = { "had_activated","had_ip","had_port","graph_activated",
 		"graph_database","graph_ws2000","graph_host","graph_port","graph_user","graph_password",
 		"thermostat_activated","had_control_activated","graph_oe_wohn","graph_bo_out",
 		"graph_bo_wohn","graph_oe_vor","graph_oe_rueck","graph_bo_hk_soll","graph_bo_hk_ist",
 		"graph_bo_hk_ventil","graph_bo_hk_spannung","graph_oe_hk_soll","graph_oe_hk_ist",
-		"graph_oe_hk_ventil","graph_oe_hk_spannung","graph_oe_out"};
+		"graph_oe_hk_ventil","graph_oe_hk_spannung","graph_oe_out","graph_bo_door","graph_bo_window"};
 
 int saveConfig(char *conf)
 {
@@ -70,6 +70,8 @@ int saveConfig(char *conf)
 	fprintf(config_file,"graph_oe_hk_ist = %d\n",config.graph_oe_hk_ist);
 	fprintf(config_file,"graph_oe_hk_ventil = %d\n",config.graph_oe_hk_ventil);
 	fprintf(config_file,"graph_oe_hk_spannung = %d\n",config.graph_oe_hk_spannung);
+	fprintf(config_file,"graph_bo_door = %d\n",config.graph_bo_door);
+	fprintf(config_file,"graph_bo_window = %d\n",config.graph_bo_window);
 
 	fclose(config_file);
 	return 1;
@@ -213,6 +215,10 @@ int loadConfig(char *conf)
 				case 24: config.graph_oe_hk_spannung = atoi(value);
 					break;
 				case 25: config.graph_oe_out = atoi(value);
+					break;
+				case 26: config.graph_bo_door = atoi(value);
+					break;
+				case 27: config.graph_bo_window = atoi(value);
 					break;
 			}
 		}

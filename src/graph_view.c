@@ -131,3 +131,19 @@ G_MODULE_EXPORT void on_checkbutton_oe_hk_spannung_toggled(GtkToggleButton *togg
 		config.graph_oe_hk_spannung =0;
 }
 
+G_MODULE_EXPORT void on_checkbutton_bo_door_toggled(GtkToggleButton *toggle_button)
+{
+	if(gtk_toggle_button_get_active(toggle_button))
+		config.graph_bo_door =1;
+	else
+		config.graph_bo_door =0;
+}
+
+G_MODULE_EXPORT void on_checkbutton_bo_window_toggled(GtkToggleButton *toggle_button)
+{
+	if(gtk_toggle_button_get_active(toggle_button))
+		config.graph_bo_window =1;
+	else
+		config.graph_bo_window =0;
+}
+
