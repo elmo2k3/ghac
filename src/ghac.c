@@ -110,22 +110,33 @@ void updateThermostat()
 {
 	int16_t tempis, tempset, voltage;
 	int8_t valve, mode;
+	struct _hr20info hr20info;
 
 	gchar label_buffer[20];
 	
-	hr20GetStatus(&tempis, &tempset, &valve, &voltage, &mode);
-
-	sprintf(label_buffer,"%3.2f°C", (float)tempis/100.0);
+	hr20GetStatus(&hr20info);
+	sprintf(label_buffer,"%3.2f°C", (float)hr20info.tempis/100.0);
 	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_t_is")), label_buffer);
-//	sprintf(label_buffer,"%3.2f°C", (float)tempset/100.0);
-//	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_t_set")), label_buffer);
-	if((tempset/50-10) >= -1)
-		gtk_combo_box_set_active(GTK_COMBO_BOX(glade_xml_get_widget(xml,"combobox_temperature")),tempset/50 - 10);
-	sprintf(label_buffer,"%d%%", valve);
+	if((hr20info.tempset/50-10) >= -1)
+		gtk_combo_box_set_active(GTK_COMBO_BOX(
+			glade_xml_get_widget(xml,"combobox_temperature")),hr20info.tempset/50 - 10);
+//	if((hr20info.auto_temperature[0]/50-10) >= -1)
+//		gtk_combo_box_set_active(GTK_COMBO_BOX(
+//			glade_xml_get_widget(xml,"combobox_temp_frost")),hr20info.auto_temperature[0]/50 - 10);
+//	if((hr20info.auto_temperature[1]/50-10) >= -1)
+//		gtk_combo_box_set_active(GTK_COMBO_BOX(
+//			glade_xml_get_widget(xml,"combobox_temp_save")),hr20info.auto_temperature[1]/50 - 10);
+//	if((hr20info.auto_temperature[2]/50-10) >= -1)
+//		gtk_combo_box_set_active(GTK_COMBO_BOX(
+//			glade_xml_get_widget(xml,"combobox_temp_comfort")),hr20info.auto_temperature[2]/50 - 10);
+//	if((hr20info.auto_temperature[3]/50-10) >= -1)
+//		gtk_combo_box_set_active(GTK_COMBO_BOX(
+//			glade_xml_get_widget(xml,"combobox_temp_super_comfort")),hr20info.auto_temperature[3]/50 - 10);
+	sprintf(label_buffer,"%d%%", hr20info.valve);
 	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_valve")), label_buffer);
-	sprintf(label_buffer,"%1.3fV", (float)voltage/1000.0);
+	sprintf(label_buffer,"%1.3fV", (float)hr20info.voltage/1000.0);
 	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_bat")), label_buffer);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(glade_xml_get_widget(xml,"combobox_mode")),(gint)mode-1);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(glade_xml_get_widget(xml,"combobox_mode")),(gint)hr20info.mode-1);
 }
 
 G_MODULE_EXPORT gint thermostat_set_mode(GtkWidget *widget)
