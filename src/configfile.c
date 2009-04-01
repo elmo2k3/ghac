@@ -31,13 +31,14 @@
 
 #include "configfile.h"
 
-#define NUM_PARAMS 28
+#define NUM_PARAMS 29
 static char *config_params[NUM_PARAMS] = { "had_activated","had_ip","had_port","graph_activated",
 		"graph_database","graph_ws2000","graph_host","graph_port","graph_user","graph_password",
 		"thermostat_activated","had_control_activated","graph_oe_wohn","graph_bo_out",
 		"graph_bo_wohn","graph_oe_vor","graph_oe_rueck","graph_bo_hk_soll","graph_bo_hk_ist",
 		"graph_bo_hk_ventil","graph_bo_hk_spannung","graph_oe_hk_soll","graph_oe_hk_ist",
-		"graph_oe_hk_ventil","graph_oe_hk_spannung","graph_oe_out","graph_bo_door","graph_bo_window"};
+		"graph_oe_hk_ventil","graph_oe_hk_spannung","graph_oe_out","graph_bo_door","graph_bo_window",
+		"had_password"};
 
 int saveConfig(char *conf)
 {
@@ -48,6 +49,7 @@ int saveConfig(char *conf)
 	fprintf(config_file,"had_ip = %s\n",config.had_ip);
 	fprintf(config_file,"had_port = %d\n",config.had_port);
 	fprintf(config_file,"had_control_activated = %d\n",config.had_control_activated);
+	fprintf(config_file,"had_password = %s\n",config.had_password);
 	fprintf(config_file,"graph_activated = %d\n",config.graph_activated);
 	fprintf(config_file,"graph_database = %s\n",config.graph_database);
 	fprintf(config_file,"graph_ws2000 = %s\n",config.graph_database_ws2000);
@@ -219,6 +221,8 @@ int loadConfig(char *conf)
 				case 26: config.graph_bo_door = atoi(value);
 					break;
 				case 27: config.graph_bo_window = atoi(value);
+					break;
+				case 28: strcpy(config.had_password, value);
 					break;
 			}
 		}

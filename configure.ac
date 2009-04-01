@@ -46,10 +46,9 @@ PKG_CHECK_MODULES([libglade], libglade-2.0)
 AC_SUBST(libglade_LIBS)
 AC_SUBST(libglade_CFLAGS)
 
-#libhac
-PKG_CHECK_MODULES([libhac], libhac >= 0.2.0)
-AC_SUBST(libhac_LIBS)
-AC_SUBST(libhac_CFLAGS)
+PKG_CHECK_MODULES([libssl], libssl >= 0.9.8g)
+AC_SUBST(libssl_LIBS)
+AC_SUBST(libssl_CFLAGS)
 
 win32=no
 case $host in

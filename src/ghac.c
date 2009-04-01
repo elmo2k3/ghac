@@ -522,6 +522,8 @@ G_MODULE_EXPORT void on_button_config_set_clicked(GtkWidget *widget)
 	int tempint;
 	strncpy(config.had_ip,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_ip"))), 15);
 	config.had_ip[15] = 0;
+	strncpy(config.had_password,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_password"))), 127);
+	config.had_password[127] = '\0';
 	config.had_port = atoi(gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_port"))));
 	config.graph_port = atoi(gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_port"))));
 	strncpy(config.graph_database,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_database"))), 99);
@@ -540,7 +542,7 @@ G_MODULE_EXPORT void on_button_config_set_clicked(GtkWidget *widget)
 	{
 		if(tempint)
 		{
-			initLibHac(config.had_ip);
+			initLibHac(config.had_ip, config.had_password);
 			if(config.had_control_activated)
 				gtk_widget_show(GTK_WIDGET(glade_xml_get_widget(xml,"hbox4")));
 			if(config.thermostat_activated)
@@ -624,6 +626,7 @@ G_MODULE_EXPORT void loadConfigToGui()
 {
 	gchar entry[100];
 	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_ip")),config.had_ip);
+	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_password")),config.had_password);
 	g_sprintf(entry,"%d",config.had_port);
 	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_port")),entry);
 	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_database")),config.graph_database);
@@ -700,7 +703,7 @@ int main(int argc, char *argv[])
 	today = localtime(&rawtime);
 #ifdef ENABLE_LIBHAC
 	if(config.had_activated)
-		initLibHac(server_ip);
+		initLibHac(server_ip, config.had_password);
 #endif
 	gtk_init(&argc, &argv);
 #ifdef _WIN32

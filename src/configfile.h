@@ -41,6 +41,7 @@ struct _config
 	int had_activated;
 	char had_ip[16]; 
 	int had_port;
+	char had_password[128];
 	int graph_activated;
 	char graph_database[100];
 	char graph_database_ws2000[100];
