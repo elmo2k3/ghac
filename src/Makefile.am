@@ -8,8 +8,8 @@ if WIN32
 ghac_LDADD = icon.o
 endif
 
-LIBS = @libglade_LIBS@ -export-dynamic @EXTRA_LDFLAGS@ @libssl_CFLAGS@
-AM_CFLAGS = @CFLAGS@ @libglade_CFLAGS@ @EXTRA_CFLAGS@ @libssl_LIBS@
+LIBS = @libglade_LIBS@ -export-dynamic @EXTRA_LDFLAGS@
+AM_CFLAGS = @CFLAGS@ @libglade_CFLAGS@ @EXTRA_CFLAGS@
 
 if ENABLE_LIBHAGRAPH
 LIBS+=@libhagraph_LIBS@
@@ -27,6 +27,9 @@ AM_CFLAGS+=@libhac_CFLAGS@
 endif
 
 if WIN32
-LIBS += -lws2_32 -lpthreadGC2
+LIBS += -lws2_32 -lpthreadGC2 -lssl32 -leay32
+else
+LIBS+= @libssl_LIBS@
+AM_CFLAGS+= @libssl_CFLAGS@
 endif
 
