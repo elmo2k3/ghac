@@ -37,6 +37,7 @@
 #include "ghac.h"
 #include "graph_view.h"
 #include "configfile.h"
+#include "../version.h"
 
 	
 #define SECONDS_PER_DAY (60*60*24)
@@ -749,6 +750,9 @@ int main(int argc, char *argv[])
 #ifdef ENABLE_LIBHAC
 	pthread_create(&update_thread, NULL, (void*)&updater, NULL);
 #endif
+	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_version_ghac")), GHAC_VERSION);
+	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_version_libhac")), libhacVersion());
+	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_version_libhagraph")), libhagraphVersion());
 	gtk_main();
 	return 0;
 }
