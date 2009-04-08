@@ -31,14 +31,14 @@
 
 #include "configfile.h"
 
-#define NUM_PARAMS 29
+#define NUM_PARAMS 32
 static char *config_params[NUM_PARAMS] = { "had_activated","had_ip","had_port","graph_activated",
 		"graph_database","graph_ws2000","graph_host","graph_port","graph_user","graph_password",
 		"thermostat_activated","had_control_activated","graph_oe_wohn","graph_bo_out",
 		"graph_bo_wohn","graph_oe_vor","graph_oe_rueck","graph_bo_hk_soll","graph_bo_hk_ist",
 		"graph_bo_hk_ventil","graph_bo_hk_spannung","graph_oe_hk_soll","graph_oe_hk_ist",
 		"graph_oe_hk_ventil","graph_oe_hk_spannung","graph_oe_out","graph_bo_door","graph_bo_window",
-		"had_password"};
+		"had_password","last_graph_width","last_graph_height","last_graph_filename"};
 
 int saveConfig(char *conf)
 {
@@ -74,6 +74,9 @@ int saveConfig(char *conf)
 	fprintf(config_file,"graph_oe_hk_spannung = %d\n",config.graph_oe_hk_spannung);
 	fprintf(config_file,"graph_bo_door = %d\n",config.graph_bo_door);
 	fprintf(config_file,"graph_bo_window = %d\n",config.graph_bo_window);
+	fprintf(config_file,"last_graph_width = %d\n",config.last_graph_width);
+	fprintf(config_file,"last_graph_height = %d\n",config.last_graph_height);
+	fprintf(config_file,"last_graph_filename = %d\n",config.last_graph_filename);
 
 	fclose(config_file);
 	return 1;
@@ -115,6 +118,8 @@ int loadConfig(char *conf)
 	strcpy(config.graph_database_ws2000, CONFIG_DEFAULT_GRAPH_DATABASE_WS2000);
 	config.graph_bo_out = 1;
 	config.graph_oe_out = 1;
+	config.last_graph_width = 1000;
+	config.last_graph_height = 500;
 
 	config_file = fopen(conf,"r");
 	if(!config_file)
@@ -223,6 +228,12 @@ int loadConfig(char *conf)
 				case 27: config.graph_bo_window = atoi(value);
 					break;
 				case 28: strcpy(config.had_password, value);
+					break;
+				case 29: config.last_graph_width = atoi(value);
+					break;
+				case 30: config.last_graph_height = atoi(value);
+					break;
+				case 31: strcpy(config.last_graph_filename, value);
 					break;
 			}
 		}

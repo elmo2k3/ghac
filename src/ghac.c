@@ -345,14 +345,9 @@ static gboolean updateRgb()
 
 #endif //ENABLE_LIBHAC
 
-G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpointer data)
+static int getModuleSensorArrays(int *modul, int *sensor)
 {
-	char date[20];
-	char from[13], to[13];
-	int view;
-	int modul[15], sensor[15], numGraphs=0;
-	unsigned int day, month, year;
-
+	int numGraphs = 0;
 	if(config.graph_bo_out)
 	{
 		modul[numGraphs] = 3;
@@ -449,6 +444,19 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 		sensor[numGraphs] = 2;
 		numGraphs++;
 	}
+	return numGraphs;
+}
+
+
+G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpointer data)
+{
+	char date[20];
+	char from[13], to[13];
+	int view;
+	int modul[15], sensor[15], numGraphs;
+	unsigned int day, month, year;
+	
+	numGraphs = getModuleSensorArrays(modul, sensor);
 #ifdef ENABLE_LIBHAGRAPH
 	if(!yet_drawed)
 	{
@@ -486,6 +494,24 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 	else
 		drawGraphGtk(widget, &graph);
 #endif //ENABLE_LIBHAGRAPH
+}
+
+G_MODULE_EXPORT void save_graph(GtkWidget *widget, GData *data)
+{
+	char *filename = (char*)gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(gtk_builder_get_object(builder,"button_save_graph")));
+	if(!filename)
+		return;
+	strncpy(config.last_graph_filename, filename, 4095);
+	g_free(filename);
+	config.last_graph_filename[4095] = '\0';
+	if(!strstr(config.last_graph_filename, ".png") && strlen(config.last_graph_filename) < 4092)
+		strcat(config.last_graph_filename, ".png");
+
+	config.last_graph_width = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinbutton_width")));
+	config.last_graph_height = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinbutton_height")));
+	if(!yet_drawed)
+		gtk_widget_queue_draw(GTK_WIDGET(gtk_builder_get_object(builder,"drawingarea2")));
+	drawGraphPng(config.last_graph_filename, &graph, config.last_graph_width, config.last_graph_height);	
 }
 
 G_MODULE_EXPORT gboolean on_button_draw_clicked(GtkButton *button)
@@ -664,6 +690,9 @@ G_MODULE_EXPORT void loadConfigToGui()
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_oe_hk_ventil")),1);
 	if(config.graph_oe_hk_spannung)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_oe_hk_spannung")),1);
+
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinbutton_width")), (gdouble)config.last_graph_width);
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinbutton_height")), (gdouble)config.last_graph_height);
 }
 	
 
@@ -740,11 +769,11 @@ int main(int argc, char *argv[])
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_version_libhagraph")), libhagraphVersion());
 	updateThermostat();
 #ifdef ENABLE_LIBHAC
-	g_timeout_add_seconds(1, (GSourceFunc)updateRgb, NULL);
-	g_timeout_add_seconds(1, (GSourceFunc)updateRelais, NULL);
-	g_timeout_add_seconds(1, (GSourceFunc)updateModules, NULL);
-	g_timeout_add_seconds(1, (GSourceFunc)updateVoltage, NULL);
-	g_timeout_add_seconds(1, (GSourceFunc)updateTemperatures, NULL);
+	g_timeout_add_seconds(10, (GSourceFunc)updateRgb, NULL);
+	g_timeout_add_seconds(10, (GSourceFunc)updateRelais, NULL);
+	g_timeout_add_seconds(10, (GSourceFunc)updateModules, NULL);
+	g_timeout_add_seconds(10, (GSourceFunc)updateVoltage, NULL);
+	g_timeout_add_seconds(10, (GSourceFunc)updateTemperatures, NULL);
 	g_timeout_add_seconds(10, (GSourceFunc)updateThermostat, NULL);
 	g_timeout_add_seconds(300, (GSourceFunc)on_button_draw_clicked, NULL);
 #endif
