@@ -488,7 +488,7 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 #endif //ENABLE_LIBHAGRAPH
 }
 
-G_MODULE_EXPORT void on_button_draw_clicked(GtkButton *button)
+G_MODULE_EXPORT gboolean on_button_draw_clicked(GtkButton *button)
 {
 #ifdef ENABLE_LIBHAGRAPH
 	freeGraph(&graph);
@@ -497,6 +497,7 @@ G_MODULE_EXPORT void on_button_draw_clicked(GtkButton *button)
 //	setDrawGraph();
 	gtk_widget_queue_draw(GTK_WIDGET(gtk_builder_get_object(builder,"drawingarea2")));
 	//updateGraph();
+	return 1;
 }
 
 
@@ -745,6 +746,7 @@ int main(int argc, char *argv[])
 	g_timeout_add_seconds(1, (GSourceFunc)updateVoltage, NULL);
 	g_timeout_add_seconds(1, (GSourceFunc)updateTemperatures, NULL);
 	g_timeout_add_seconds(10, (GSourceFunc)updateThermostat, NULL);
+	g_timeout_add_seconds(300, (GSourceFunc)on_button_draw_clicked, NULL);
 #endif
 	gtk_main();
 	return 0;
