@@ -1,1 +1,1 @@
-#define GHAC_VERSION "v0.2.4-11-gfbfb524"
+#define GHAC_VERSION "v0.2.4-12-g7fed45b"
