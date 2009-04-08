@@ -19,7 +19,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 #include <glib/gprintf.h>
 #include <pthread.h>
 #include <time.h>
@@ -46,7 +45,7 @@
 pthread_t update_thread, network_thread;
 GtkStatusIcon *trayIcon=NULL;
 
-GladeXML *xml;
+GtkBuilder *builder;
 
 GtkAdjustment *adjusts_rgb[3];
 
@@ -102,9 +101,9 @@ void updateTemperatures()
 	}
 
 	sprintf(label_buffer,"%3.2f°C", temperature_outside);
-	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_outside")), label_buffer);
+	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_outside")), label_buffer);
 	sprintf(label_buffer,"%3.2f°C", temperature_wohnzimmer);
-	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_wohnzimmer")), label_buffer);
+	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_wohnzimmer")), label_buffer);
 }
 
 void updateThermostat()
@@ -117,32 +116,32 @@ void updateThermostat()
 	
 	hr20GetStatus(&hr20info);
 	sprintf(label_buffer,"%3.2f°C", (float)hr20info.tempis/100.0);
-	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_t_is")), label_buffer);
+	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_t_is")), label_buffer);
 	if((hr20info.tempset/50-10) >= -1)
 		gtk_combo_box_set_active(GTK_COMBO_BOX(
-			glade_xml_get_widget(xml,"combobox_temperature")),hr20info.tempset/50 - 10);
+			gtk_builder_get_object(builder,"combobox_temperature")),hr20info.tempset/50 - 10);
 //	if((hr20info.auto_temperature[0]/50-10) >= -1)
 //		gtk_combo_box_set_active(GTK_COMBO_BOX(
-//			glade_xml_get_widget(xml,"combobox_temp_frost")),hr20info.auto_temperature[0]/50 - 10);
+//			gtk_builder_get_object(builder,"combobox_temp_frost")),hr20info.auto_temperature[0]/50 - 10);
 //	if((hr20info.auto_temperature[1]/50-10) >= -1)
 //		gtk_combo_box_set_active(GTK_COMBO_BOX(
-//			glade_xml_get_widget(xml,"combobox_temp_save")),hr20info.auto_temperature[1]/50 - 10);
+//			gtk_builder_get_object(builder,"combobox_temp_save")),hr20info.auto_temperature[1]/50 - 10);
 //	if((hr20info.auto_temperature[2]/50-10) >= -1)
 //		gtk_combo_box_set_active(GTK_COMBO_BOX(
-//			glade_xml_get_widget(xml,"combobox_temp_comfort")),hr20info.auto_temperature[2]/50 - 10);
+//			gtk_builder_get_object(builder,"combobox_temp_comfort")),hr20info.auto_temperature[2]/50 - 10);
 //	if((hr20info.auto_temperature[3]/50-10) >= -1)
 //		gtk_combo_box_set_active(GTK_COMBO_BOX(
-//			glade_xml_get_widget(xml,"combobox_temp_super_comfort")),hr20info.auto_temperature[3]/50 - 10);
+//			gtk_builder_get_object(builder,"combobox_temp_super_comfort")),hr20info.auto_temperature[3]/50 - 10);
 	sprintf(label_buffer,"%d%%", hr20info.valve);
-	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_valve")), label_buffer);
+	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_valve")), label_buffer);
 	sprintf(label_buffer,"%1.3fV", (float)hr20info.voltage/1000.0);
-	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_bat")), label_buffer);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(glade_xml_get_widget(xml,"combobox_mode")),(gint)hr20info.mode-1);
+	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_bat")), label_buffer);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_mode")),(gint)hr20info.mode-1);
 }
 
 G_MODULE_EXPORT gint thermostat_set_mode(GtkWidget *widget)
 {
-	gint mode = (gint)(gtk_combo_box_get_active(GTK_COMBO_BOX(glade_xml_get_widget(xml,"combobox_mode"))))+1;
+	gint mode = (gint)(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_mode"))))+1;
 	setHr20Mode((int)mode);
 	return 0;
 }
@@ -151,7 +150,7 @@ G_MODULE_EXPORT gint thermostat_set_temperature(GtkWidget *widget)
 {
 	int16_t temperature;
 
-	temperature = (int16_t)(gtk_combo_box_get_active(GTK_COMBO_BOX(glade_xml_get_widget(xml,"combobox_temperature"))) + 10) * 5;
+	temperature = (int16_t)(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_temperature"))) + 10) * 5;
 
 
 	setHr20Temperature(temperature);
@@ -165,7 +164,7 @@ void updateVoltage()
 
 	getVoltage(3,&voltage);
 	sprintf(label_buffer,"%3.2fV",voltage);
-	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_voltage")), label_buffer);
+	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_voltage")), label_buffer);
 }
 	
 
@@ -174,42 +173,42 @@ void updateRelais()
 	relaisState = getRelaisState();
 
 	if(relaisState & 1)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton1")), 1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"relaisbutton1")), 1);
 	else
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton1")), 0);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"relaisbutton1")), 0);
 	if(relaisState & 2)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton2")), 1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"relaisbutton2")), 1);
 	else
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton2")), 0);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"relaisbutton2")), 0);
 	if(relaisState & 4)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton3")), 1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"relaisbutton3")), 1);
 	else
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton3")), 0);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"relaisbutton3")), 0);
 	if(relaisState & 8)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton4")), 1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"relaisbutton4")), 1);
 	else
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton4")), 0);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"relaisbutton4")), 0);
 	if(relaisState & 16)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton5")), 1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"relaisbutton5")), 1);
 	else
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton5")), 0);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"relaisbutton5")), 0);
 	if(relaisState & 32)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton6")), 1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"relaisbutton6")), 1);
 	else
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"relaisbutton6")), 0);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"relaisbutton6")), 0);
 
 }
 
 void updateModules()
 {
 	if(getLedmatrixState())
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"ledmatrix_button")), 1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"ledmatrix_button")), 1);
 	else
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"ledmatrix_button")), 0);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"ledmatrix_button")), 0);
 	if(getScrobblerState())
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"scrobbler_button")), 1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"scrobbler_button")), 1);
 	else
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"scrobbler_button")), 0);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"scrobbler_button")), 0);
 }
 
 G_MODULE_EXPORT void on_ledmatrix_toggled(GtkToggleButton *toggle_button)
@@ -297,20 +296,20 @@ G_MODULE_EXPORT void on_button_send_clicked(GtkWidget *widget)
 	rgb_modul = 3;
 	smoothness = 5;
 
-	setRgbValueModul(0x10, (int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red0"))),
-			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_green0"))),
-			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_blue0"))),
-			atoi(gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness"))))
+	setRgbValueModul(0x10, (int)gtk_range_get_value(GTK_RANGE(gtk_builder_get_object(builder,"vscale_red0"))),
+			(int)gtk_range_get_value(GTK_RANGE(gtk_builder_get_object(builder,"vscale_green0"))),
+			(int)gtk_range_get_value(GTK_RANGE(gtk_builder_get_object(builder,"vscale_blue0"))),
+			atoi(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_smoothness"))))
 		    );
-	setRgbValueModul(0x11, (int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red1"))),
-			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_green1"))),
-			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_blue1"))),
-			atoi(gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness"))))
+	setRgbValueModul(0x11, (int)gtk_range_get_value(GTK_RANGE(gtk_builder_get_object(builder,"vscale_red1"))),
+			(int)gtk_range_get_value(GTK_RANGE(gtk_builder_get_object(builder,"vscale_green1"))),
+			(int)gtk_range_get_value(GTK_RANGE(gtk_builder_get_object(builder,"vscale_blue1"))),
+			atoi(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_smoothness"))))
 		    );
-	setRgbValueModul(0x12, (int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_red2"))),
-			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_green2"))),
-			(int)gtk_range_get_value(GTK_RANGE(glade_xml_get_widget(xml,"vscale_blue2"))),
-			atoi(gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness"))))
+	setRgbValueModul(0x12, (int)gtk_range_get_value(GTK_RANGE(gtk_builder_get_object(builder,"vscale_red2"))),
+			(int)gtk_range_get_value(GTK_RANGE(gtk_builder_get_object(builder,"vscale_green2"))),
+			(int)gtk_range_get_value(GTK_RANGE(gtk_builder_get_object(builder,"vscale_blue2"))),
+			atoi(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_smoothness"))))
 		    );
 
 }
@@ -329,12 +328,12 @@ static gboolean updateRgb()
 	{
 		g_sprintf(smoothness_buf,"%d",hadState.rgbModuleValues[i].smoothness);
 		g_sprintf(slider_name,"vscale_red%d",i);
-		gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,slider_name)),hadState.rgbModuleValues[i].red);
+		gtk_range_set_value(GTK_RANGE(gtk_builder_get_object(builder,slider_name)),hadState.rgbModuleValues[i].red);
 		g_sprintf(slider_name,"vscale_green%d",i);
-		gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,slider_name)),hadState.rgbModuleValues[i].green);
+		gtk_range_set_value(GTK_RANGE(gtk_builder_get_object(builder,slider_name)),hadState.rgbModuleValues[i].green);
 		g_sprintf(slider_name,"vscale_blue%d",i);
-		gtk_range_set_value(GTK_RANGE(glade_xml_get_widget(xml,slider_name)),hadState.rgbModuleValues[i].blue);
-		gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_smoothness")),smoothness_buf);
+		gtk_range_set_value(GTK_RANGE(gtk_builder_get_object(builder,slider_name)),hadState.rgbModuleValues[i].blue);
+		gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_smoothness")),smoothness_buf);
 	}
 	
 	return 1;
@@ -471,15 +470,15 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 	if(!yet_drawed)
 	{
 		int i;
-		gtk_calendar_get_date(GTK_CALENDAR(glade_xml_get_widget(xml,"calendar")),
+		gtk_calendar_get_date(GTK_CALENDAR(gtk_builder_get_object(builder,"calendar")),
 					&year, &month, &day);
-		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_day"))))
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"radio_day"))))
 			view = TB_DAY;
-		else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_week"))))
+		else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"radio_week"))))
 			view = TB_WEEK;
-		else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_month"))))
+		else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"radio_month"))))
 			view = TB_MONTH;
-		else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"radio_year"))))
+		else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"radio_year"))))
 			view = TB_YEAR;
 
 		sprintf(date,"%d-%02d-%02d",year,month+1,day);
@@ -513,7 +512,7 @@ G_MODULE_EXPORT void on_button_draw_clicked(GtkButton *button)
 #endif
 	yet_drawed = 0;
 //	setDrawGraph();
-	gtk_widget_queue_draw(glade_xml_get_widget(xml,"drawingarea2"));
+	gtk_widget_queue_draw(GTK_WIDGET(gtk_builder_get_object(builder,"drawingarea2")));
 	//updateGraph();
 }
 
@@ -521,23 +520,23 @@ G_MODULE_EXPORT void on_button_draw_clicked(GtkButton *button)
 G_MODULE_EXPORT void on_button_config_set_clicked(GtkWidget *widget)
 {
 	int tempint;
-	strncpy(config.had_ip,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_ip"))), 15);
+	strncpy(config.had_ip,gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_had_ip"))), 15);
 	config.had_ip[15] = 0;
-	strncpy(config.had_password,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_password"))), 127);
+	strncpy(config.had_password,gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_had_password"))), 127);
 	config.had_password[127] = '\0';
-	config.had_port = atoi(gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_port"))));
-	config.graph_port = atoi(gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_port"))));
-	strncpy(config.graph_database,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_database"))), 99);
+	config.had_port = atoi(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_had_port"))));
+	config.graph_port = atoi(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_graph_port"))));
+	strncpy(config.graph_database,gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_graph_database"))), 99);
 	config.graph_database[99] = 0;
-	strncpy(config.graph_user,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_user"))), 99);
+	strncpy(config.graph_user,gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_graph_user"))), 99);
 	config.graph_user[99] = 0;
-	strncpy(config.graph_password,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_password"))), 99);
+	strncpy(config.graph_password,gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_graph_password"))), 99);
 	config.graph_password[99] = 0;
-	strncpy(config.graph_database_ws2000,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_ws2000"))), 99);
+	strncpy(config.graph_database_ws2000,gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_graph_ws2000"))), 99);
 	config.graph_database_ws2000[99] = 0;
-	strncpy(config.graph_host,gtk_entry_get_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_host"))), 99);
+	strncpy(config.graph_host,gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_graph_host"))), 99);
 	config.graph_host[99] = 0;
-	tempint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_had_activated"))); 
+	tempint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_had_activated"))); 
 #ifdef ENABLE_LIBHAC
 	if(tempint != config.had_activated)
 	{
@@ -545,44 +544,44 @@ G_MODULE_EXPORT void on_button_config_set_clicked(GtkWidget *widget)
 		{
 			initLibHac(config.had_ip, config.had_password);
 			if(config.had_control_activated)
-				gtk_widget_show(GTK_WIDGET(glade_xml_get_widget(xml,"hbox4")));
+				gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(builder,"hbox4")));
 			if(config.thermostat_activated)
-				gtk_widget_show(GTK_WIDGET(glade_xml_get_widget(xml,"fixed2")));
+				gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(builder,"fixed2")));
 		}
 		else
 		{
-			gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"hbox4")));
-			gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"fixed2")));
+			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(builder,"hbox4")));
+			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(builder,"fixed2")));
 			closeLibHac();
 		}
 	}
 #endif
 	config.had_activated = tempint;
-	tempint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_graph_activated"))); 
+	tempint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_graph_activated"))); 
 	if(tempint != config.graph_activated)
 	{
 		if(tempint)
-			gtk_widget_show(GTK_WIDGET(glade_xml_get_widget(xml,"vbox2")));
+			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(builder,"vbox2")));
 		else
-			gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"vbox2")));
+			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(builder,"vbox2")));
 		config.graph_activated = tempint;
 	}
-	tempint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_control_activated"))); 
+	tempint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_control_activated"))); 
 	if(tempint != config.had_control_activated)
 	{
 		if(tempint)
-			gtk_widget_show(GTK_WIDGET(glade_xml_get_widget(xml,"hbox4")));
+			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(builder,"hbox4")));
 		else
-			gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"hbox4")));
+			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(builder,"hbox4")));
 		config.had_control_activated = tempint;
 	}
-	tempint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_thermostat_activated"))); 
+	tempint = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_thermostat_activated"))); 
 	if(tempint != config.thermostat_activated)
 	{
 		if(tempint)
-			gtk_widget_show(GTK_WIDGET(glade_xml_get_widget(xml,"fixed2")));
+			gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(builder,"fixed2")));
 		else
-			gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"fixed2")));
+			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(builder,"fixed2")));
 		config.thermostat_activated = tempint;
 	}
 }
@@ -626,61 +625,61 @@ void trayIconPopup(GtkStatusIcon *status_icon, guint button, guint32 activate_ti
 G_MODULE_EXPORT void loadConfigToGui()
 {
 	gchar entry[100];
-	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_ip")),config.had_ip);
-	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_password")),config.had_password);
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_had_ip")),config.had_ip);
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_had_password")),config.had_password);
 	g_sprintf(entry,"%d",config.had_port);
-	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_had_port")),entry);
-	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_database")),config.graph_database);
-	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_ws2000")),config.graph_database_ws2000);
-	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_host")),config.graph_host);
-	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_user")),config.graph_user);
-	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_password")),config.graph_password);
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_had_port")),entry);
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_graph_database")),config.graph_database);
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_graph_ws2000")),config.graph_database_ws2000);
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_graph_host")),config.graph_host);
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_graph_user")),config.graph_user);
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_graph_password")),config.graph_password);
 	g_sprintf(entry,"%d",config.graph_port);
-	gtk_entry_set_text(GTK_ENTRY(glade_xml_get_widget(xml,"entry_graph_port")),entry);
+	gtk_entry_set_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_graph_port")),entry);
 	if(config.had_activated)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_had_activated")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_had_activated")),1);
 	else
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_had_activated")),0);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_had_activated")),0);
 	if(config.graph_activated)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_graph_activated")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_graph_activated")),1);
 	else
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_graph_activated")),0);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_graph_activated")),0);
 	if(config.thermostat_activated)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_thermostat_activated")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_thermostat_activated")),1);
 	else
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_thermostat_activated")),0);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_thermostat_activated")),0);
 	if(config.had_control_activated)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_control_activated")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_control_activated")),1);
 	else
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_control_activated")),0);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_control_activated")),0);
 	if(config.graph_oe_out)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_out")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_oe_out")),1);
 	if(config.graph_oe_wohn)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_wohn")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_oe_wohn")),1);
 	if(config.graph_bo_out)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_bo_out")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_bo_out")),1);
 	if(config.graph_bo_wohn)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_bo_wohn")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_bo_wohn")),1);
 	if(config.graph_oe_vor)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_vor")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_oe_vor")),1);
 	if(config.graph_oe_rueck)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_rueck")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_oe_rueck")),1);
 	if(config.graph_bo_hk_soll)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_bo_hk_soll")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_bo_hk_soll")),1);
 	if(config.graph_bo_hk_ist)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_bo_hk_ist")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_bo_hk_ist")),1);
 	if(config.graph_bo_hk_ventil)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_bo_hk_ventil")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_bo_hk_ventil")),1);
 	if(config.graph_bo_hk_spannung)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_bo_hk_spannung")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_bo_hk_spannung")),1);
 	if(config.graph_oe_hk_soll)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_hk_soll")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_oe_hk_soll")),1);
 	if(config.graph_oe_hk_ist)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_hk_ist")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_oe_hk_ist")),1);
 	if(config.graph_oe_hk_ventil)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_hk_ventil")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_oe_hk_ventil")),1);
 	if(config.graph_oe_hk_spannung)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(glade_xml_get_widget(xml,"checkbutton_oe_hk_spannung")),1);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_oe_hk_spannung")),1);
 }
 	
 
@@ -707,18 +706,23 @@ int main(int argc, char *argv[])
 		initLibHac(server_ip, config.had_password);
 #endif
 	gtk_init(&argc, &argv);
+	builder = gtk_builder_new();
 #ifdef _WIN32
-	xml = glade_xml_new("C:\\Programme\\ghac\\ghac.glade", NULL, NULL);
+	gtk_builder_add_from_file(builder, "C:\\Programme\\ghac\\ghac.ui", NULL);
 	trayIcon = gtk_status_icon_new_from_file("C:\\Programme\\ghac\\gnome-color-browser.png");
 #else
-	sprintf(location,"%s/.ghac/ghac.glade",home);
-	xml = glade_xml_new(location, NULL, NULL);
+	sprintf(location,"%s/.ghac/ghac.ui",home);
+	if(!gtk_builder_add_from_file(builder, location, NULL))
+	{
+		fprintf(stderr,"Could not import %s\n",location);
+		exit(1);
+	}
 	sprintf(location,"%s/.ghac/gnome-color-browser.png",home);
 	trayIcon = gtk_status_icon_new_from_file(location);
 #endif
 
-	widget = glade_xml_get_widget(xml, "mainWindow");
-	errorPopup = glade_xml_get_widget(xml,"errorDialog");
+	widget = GTK_WIDGET(gtk_builder_get_object(builder, "mainWindow"));
+	errorPopup = gtk_builder_get_object(builder,"errorDialog");
 	
 
 	g_signal_connect(widget, "delete-event",
@@ -732,27 +736,27 @@ int main(int argc, char *argv[])
 
 	
 	gtk_status_icon_set_visible(trayIcon, TRUE);
-	glade_xml_signal_autoconnect(xml);
-	
-	gtk_calendar_select_month(GTK_CALENDAR(glade_xml_get_widget(xml,"calendar")),
+	gtk_builder_connect_signals(builder, NULL);
+
+	gtk_calendar_select_month(GTK_CALENDAR(gtk_builder_get_object(builder,"calendar")),
 			today->tm_mon, today->tm_year+1900);
-	gtk_calendar_select_day(GTK_CALENDAR(glade_xml_get_widget(xml,"calendar")),
+	gtk_calendar_select_day(GTK_CALENDAR(gtk_builder_get_object(builder,"calendar")),
 			today->tm_mday);
 	
 	gtk_widget_show_all(GTK_WIDGET(widget));
 	if(!config.had_control_activated)
-		gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"hbox4")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(builder,"hbox4")));
 	if(!config.thermostat_activated)
-		gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"fixed2")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(builder,"fixed2")));
 	if(!config.graph_activated)
-		gtk_widget_hide(GTK_WIDGET(glade_xml_get_widget(xml,"vbox2")));
+		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(builder,"vbox2")));
 	loadConfigToGui();
 #ifdef ENABLE_LIBHAC
 	pthread_create(&update_thread, NULL, (void*)&updater, NULL);
 #endif
-	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_version_ghac")), GHAC_VERSION);
-	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_version_libhac")), libhacVersion());
-	gtk_label_set_text(GTK_LABEL(glade_xml_get_widget(xml,"label_version_libhagraph")), libhagraphVersion());
+	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_version_ghac")), GHAC_VERSION);
+	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_version_libhac")), libhacVersion());
+	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_version_libhagraph")), libhagraphVersion());
 	gtk_main();
 	return 0;
 }

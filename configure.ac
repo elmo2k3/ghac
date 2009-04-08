@@ -41,11 +41,6 @@ PKG_CHECK_MODULES([gtk], gtk+-2.0 >= 2.12)
 AC_SUBST(gtk_LIBS)
 AC_SUBST(gtk_CFLAGS)
 
-# libglade
-PKG_CHECK_MODULES([libglade], libglade-2.0)
-AC_SUBST(libglade_LIBS)
-AC_SUBST(libglade_CFLAGS)
-
 PKG_CHECK_MODULES([libssl], libssl >= 0.9.8g)
 AC_SUBST(libssl_LIBS)
 AC_SUBST(libssl_CFLAGS)
