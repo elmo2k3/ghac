@@ -42,7 +42,6 @@
 #define SECONDS_PER_DAY (60*60*24)
 
 
-pthread_t update_thread, network_thread;
 GtkStatusIcon *trayIcon=NULL;
 
 GtkBuilder *builder;
@@ -83,7 +82,7 @@ G_MODULE_EXPORT void ghac_end(GtkWidget *widget, gpointer daten)
 
 #ifdef ENABLE_LIBHAC
 
-void updateTemperatures()
+static gboolean updateTemperatures()
 {
 	float temperature_outside,
 	      temperature_wohnzimmer;
@@ -104,9 +103,10 @@ void updateTemperatures()
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_outside")), label_buffer);
 	sprintf(label_buffer,"%3.2f°C", temperature_wohnzimmer);
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_wohnzimmer")), label_buffer);
+	return 1;
 }
 
-void updateThermostat()
+static gboolean updateThermostat()
 {
 	int16_t tempis, tempset, voltage;
 	int8_t valve, mode;
@@ -137,6 +137,7 @@ void updateThermostat()
 	sprintf(label_buffer,"%1.3fV", (float)hr20info.voltage/1000.0);
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_bat")), label_buffer);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_mode")),(gint)hr20info.mode-1);
+	return 1;
 }
 
 G_MODULE_EXPORT gint thermostat_set_mode(GtkWidget *widget)
@@ -157,7 +158,7 @@ G_MODULE_EXPORT gint thermostat_set_temperature(GtkWidget *widget)
 	return 0;
 }
 
-void updateVoltage()
+static gboolean updateVoltage()
 {
 	float voltage;
 	gchar label_buffer[20];
@@ -165,10 +166,11 @@ void updateVoltage()
 	getVoltage(3,&voltage);
 	sprintf(label_buffer,"%3.2fV",voltage);
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_voltage")), label_buffer);
+	return 1;
 }
 	
 
-void updateRelais()
+static gboolean updateRelais()
 {
 	relaisState = getRelaisState();
 
@@ -196,10 +198,11 @@ void updateRelais()
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"relaisbutton6")), 1);
 	else
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"relaisbutton6")), 0);
+	return 1;
 
 }
 
-void updateModules()
+static gboolean updateModules()
 {
 	if(getLedmatrixState())
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"ledmatrix_button")), 1);
@@ -209,6 +212,7 @@ void updateModules()
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"scrobbler_button")), 1);
 	else
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"scrobbler_button")), 0);
+	return 1;
 }
 
 G_MODULE_EXPORT void on_ledmatrix_toggled(GtkToggleButton *toggle_button)
@@ -337,27 +341,6 @@ static gboolean updateRgb()
 	}
 	
 	return 1;
-}
-
-void updater()
-{
-	static int counter=10;
-
-	while(1)
-	{
-		updateRgb();
-		updateRelais();
-		updateModules();
-		updateVoltage();
-		updateTemperatures();
-
-		if(counter++ == 10)
-		{
-			updateThermostat();
-			counter=0;
-		}
-		g_usleep(10000000);
-	}
 }
 
 #endif //ENABLE_LIBHAC
@@ -751,12 +734,18 @@ int main(int argc, char *argv[])
 	if(!config.graph_activated)
 		gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(builder,"vbox2")));
 	loadConfigToGui();
-#ifdef ENABLE_LIBHAC
-	pthread_create(&update_thread, NULL, (void*)&updater, NULL);
-#endif
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_version_ghac")), GHAC_VERSION);
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_version_libhac")), libhacVersion());
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_version_libhagraph")), libhagraphVersion());
+	updateThermostat();
+#ifdef ENABLE_LIBHAC
+	g_timeout_add_seconds(1, (GSourceFunc)updateRgb, NULL);
+	g_timeout_add_seconds(1, (GSourceFunc)updateRelais, NULL);
+	g_timeout_add_seconds(1, (GSourceFunc)updateModules, NULL);
+	g_timeout_add_seconds(1, (GSourceFunc)updateVoltage, NULL);
+	g_timeout_add_seconds(1, (GSourceFunc)updateTemperatures, NULL);
+	g_timeout_add_seconds(10, (GSourceFunc)updateThermostat, NULL);
+#endif
 	gtk_main();
 	return 0;
 }

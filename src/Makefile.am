@@ -27,7 +27,7 @@ AM_CFLAGS+=@libhac_CFLAGS@
 endif
 
 if WIN32
-LIBS += -lws2_32 -lpthreadGC2 -lssl32 -leay32
+LIBS += -lws2_32 -lssl32 -leay32
 else
 LIBS+= @libssl_LIBS@
 AM_CFLAGS+= @libssl_CFLAGS@
