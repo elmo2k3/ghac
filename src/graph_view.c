@@ -147,3 +147,10 @@ G_MODULE_EXPORT void on_checkbutton_bo_window_toggled(GtkToggleButton *toggle_bu
 		config.graph_bo_window =0;
 }
 
+G_MODULE_EXPORT void on_checkbutton_oe_dachboden_toggled(GtkToggleButton *toggle_button)
+{
+	if(gtk_toggle_button_get_active(toggle_button))
+		config.graph_oe_dachboden =1;
+	else
+		config.graph_oe_dachboden =0;
+}

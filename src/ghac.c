@@ -444,6 +444,12 @@ static int getModuleSensorArrays(int *modul, int *sensor)
 		sensor[numGraphs] = 2;
 		numGraphs++;
 	}
+	if(config.graph_oe_dachboden)
+	{
+		modul[numGraphs] = 8;
+		sensor[numGraphs] = 0;
+		numGraphs++;
+	}
 	return numGraphs;
 }
 
@@ -690,6 +696,8 @@ G_MODULE_EXPORT void loadConfigToGui()
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_oe_hk_ventil")),1);
 	if(config.graph_oe_hk_spannung)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_oe_hk_spannung")),1);
+	if(config.graph_oe_dachboden)
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"checkbutton_oe_dachboden")),1);
 
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinbutton_width")), (gdouble)config.last_graph_width);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(gtk_builder_get_object(builder,"spinbutton_height")), (gdouble)config.last_graph_height);
@@ -767,8 +775,13 @@ int main(int argc, char *argv[])
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_version_ghac")), GHAC_VERSION);
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_version_libhac")), libhacVersion());
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_version_libhagraph")), libhagraphVersion());
-	updateThermostat();
 #ifdef ENABLE_LIBHAC
+	updateThermostat();
+	updateRgb();
+	updateRelais();
+	updateModules();
+	updateVoltage();
+	updateTemperatures();
 	g_timeout_add_seconds(10, (GSourceFunc)updateRgb, NULL);
 	g_timeout_add_seconds(10, (GSourceFunc)updateRelais, NULL);
 	g_timeout_add_seconds(10, (GSourceFunc)updateModules, NULL);

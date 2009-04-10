@@ -67,6 +67,7 @@ struct _config
 	int graph_oe_hk_spannung;
 	int graph_bo_door;
 	int graph_bo_window;
+	int graph_oe_dachboden;
 	int last_graph_width;
 	int last_graph_height;
 	char last_graph_filename[4096];
