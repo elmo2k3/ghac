@@ -787,7 +787,7 @@ int main(int argc, char *argv[])
 	g_timeout_add_seconds(10, (GSourceFunc)updateModules, NULL);
 	g_timeout_add_seconds(10, (GSourceFunc)updateVoltage, NULL);
 	g_timeout_add_seconds(10, (GSourceFunc)updateTemperatures, NULL);
-	g_timeout_add_seconds(10, (GSourceFunc)updateThermostat, NULL);
+	g_timeout_add_seconds(60, (GSourceFunc)updateThermostat, NULL);
 	g_timeout_add_seconds(300, (GSourceFunc)on_button_draw_clicked, NULL);
 #endif
 	gtk_main();
