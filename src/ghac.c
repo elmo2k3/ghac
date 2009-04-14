@@ -87,7 +87,7 @@ static gboolean updateTemperatures()
 	float temperature_outside,
 	      temperature_wohnzimmer;
 
-	gchar label_buffer[20];
+	gchar label_buffer[2000];
 	
 	
 	if(getTemperature(3,1,&temperature_outside) < 0)
@@ -103,6 +103,9 @@ static gboolean updateTemperatures()
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_outside")), label_buffer);
 	sprintf(label_buffer,"%3.2f°C", temperature_wohnzimmer);
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_wohnzimmer")), label_buffer);
+	getLastValueTable(label_buffer, config.graph_host, config.graph_user,
+		config.graph_password, config.graph_database, config.graph_database_ws2000);
+	gtk_status_icon_set_tooltip(trayIcon, label_buffer);
 	return 1;
 }
 
@@ -711,7 +714,7 @@ int main(int argc, char *argv[])
 
 	char *server_ip = getenv("HAD_HOST");
 	char *home = getenv("HOME");
-	char location[1024];
+	char location[2048];
 	sprintf(location,GHAC_CONFIG,home);
 	
 	loadConfig(location);
@@ -789,6 +792,12 @@ int main(int argc, char *argv[])
 	g_timeout_add_seconds(10, (GSourceFunc)updateTemperatures, NULL);
 	g_timeout_add_seconds(60, (GSourceFunc)updateThermostat, NULL);
 	g_timeout_add_seconds(300, (GSourceFunc)on_button_draw_clicked, NULL);
+#endif
+#ifdef ENABLE_LIBHAGRAPH
+	memset(location,0,sizeof(location));
+	getLastValueTable(location, config.graph_host, config.graph_user,
+		config.graph_password, config.graph_database, config.graph_database_ws2000);
+	gtk_status_icon_set_tooltip(trayIcon, location);
 #endif
 	gtk_main();
 	return 0;
