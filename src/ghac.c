@@ -38,10 +38,6 @@
 #include "configfile.h"
 #include "../version.h"
 
-	
-#define SECONDS_PER_DAY (60*60*24)
-
-
 GtkStatusIcon *trayIcon=NULL;
 
 GtkBuilder *builder;
@@ -57,6 +53,10 @@ GtkWidget *widget;
 struct _graph_data graph;
 #endif
 static int yet_drawed = 0;
+
+static void ghac_initLibHac(char *server_ip, GtkWindow *parent);
+void ghac_error_dialog(const char *window, gchar *string);
+static int ghacUpdater();
 
 gint exit_handler(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
@@ -90,22 +90,16 @@ static gboolean updateTemperatures()
 	gchar label_buffer[2000];
 	
 	
-	if(getTemperature(3,1,&temperature_outside) < 0)
-	{
-		gtk_widget_show_all(GTK_WIDGET(errorPopup));
-	}
-	if(getTemperature(3,0, &temperature_wohnzimmer) < 0)
-	{
-		gtk_widget_show_all(GTK_WIDGET(errorPopup));
-	}
+	getTemperature(3,1,&temperature_outside);
+	getTemperature(3,0, &temperature_wohnzimmer);
 
 	sprintf(label_buffer,"%3.2f°C", temperature_outside);
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_outside")), label_buffer);
 	sprintf(label_buffer,"%3.2f°C", temperature_wohnzimmer);
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_wohnzimmer")), label_buffer);
-	getLastValueTable(label_buffer, config.graph_host, config.graph_user,
-		config.graph_password, config.graph_database, config.graph_database_ws2000);
-	gtk_status_icon_set_tooltip(trayIcon, label_buffer);
+//	getLastValueTable(label_buffer, config.graph_host, config.graph_user,
+//		config.graph_password, config.graph_database, config.graph_database_ws2000);
+//	gtk_status_icon_set_tooltip(trayIcon, label_buffer);
 	return 1;
 }
 
@@ -123,18 +117,18 @@ static gboolean updateThermostat()
 	if((hr20info.tempset/50-10) >= -1)
 		gtk_combo_box_set_active(GTK_COMBO_BOX(
 			gtk_builder_get_object(builder,"combobox_temperature")),hr20info.tempset/50 - 10);
-//	if((hr20info.auto_temperature[0]/50-10) >= -1)
-//		gtk_combo_box_set_active(GTK_COMBO_BOX(
-//			gtk_builder_get_object(builder,"combobox_temp_frost")),hr20info.auto_temperature[0]/50 - 10);
-//	if((hr20info.auto_temperature[1]/50-10) >= -1)
-//		gtk_combo_box_set_active(GTK_COMBO_BOX(
-//			gtk_builder_get_object(builder,"combobox_temp_save")),hr20info.auto_temperature[1]/50 - 10);
-//	if((hr20info.auto_temperature[2]/50-10) >= -1)
-//		gtk_combo_box_set_active(GTK_COMBO_BOX(
-//			gtk_builder_get_object(builder,"combobox_temp_comfort")),hr20info.auto_temperature[2]/50 - 10);
-//	if((hr20info.auto_temperature[3]/50-10) >= -1)
-//		gtk_combo_box_set_active(GTK_COMBO_BOX(
-//			gtk_builder_get_object(builder,"combobox_temp_super_comfort")),hr20info.auto_temperature[3]/50 - 10);
+	if((hr20info.auto_temperature[0]/50-10) >= -1)
+		gtk_combo_box_set_active(GTK_COMBO_BOX(
+			gtk_builder_get_object(builder,"combobox_temp_frost")),hr20info.auto_temperature[0]/50 - 10);
+	if((hr20info.auto_temperature[1]/50-10) >= -1)
+		gtk_combo_box_set_active(GTK_COMBO_BOX(
+			gtk_builder_get_object(builder,"combobox_temp_save")),hr20info.auto_temperature[1]/50 - 10);
+	if((hr20info.auto_temperature[2]/50-10) >= -1)
+		gtk_combo_box_set_active(GTK_COMBO_BOX(
+			gtk_builder_get_object(builder,"combobox_temp_comfort")),hr20info.auto_temperature[2]/50 - 10);
+	if((hr20info.auto_temperature[3]/50-10) >= -1)
+		gtk_combo_box_set_active(GTK_COMBO_BOX(
+			gtk_builder_get_object(builder,"combobox_temp_super_comfort")),hr20info.auto_temperature[3]/50 - 10);
 	sprintf(label_buffer,"%d%%", hr20info.valve);
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_valve")), label_buffer);
 	sprintf(label_buffer,"%1.3fV", (float)hr20info.voltage/1000.0);
@@ -158,6 +152,38 @@ G_MODULE_EXPORT gint thermostat_set_temperature(GtkWidget *widget)
 
 
 	setHr20Temperature(temperature);
+	return 0;
+}
+
+G_MODULE_EXPORT gint on_combobox_temp_save_changed(GtkWidget *widget)
+{
+	int16_t temperature;
+	temperature = (int16_t)(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_temp_save"))) + 10) * 5;
+	setHr20AutoTemperature(1, temperature);
+	return 0;
+}
+
+G_MODULE_EXPORT gint on_combobox_temp_frost_changed(GtkWidget *widget)
+{
+	int16_t temperature;
+	temperature = (int16_t)(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_temp_frost"))) + 10) * 5;
+	setHr20AutoTemperature(0, temperature);
+	return 0;
+}
+
+G_MODULE_EXPORT gint on_combobox_temp_comfort_changed(GtkWidget *widget)
+{
+	int16_t temperature;
+	temperature = (int16_t)(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_temp_comfort"))) + 10) * 5;
+	setHr20AutoTemperature(2, temperature);
+	return 0;
+}
+
+G_MODULE_EXPORT gint on_combobox_temp_super_comfort_changed(GtkWidget *widget)
+{
+	int16_t temperature;
+	temperature = (int16_t)(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_temp_super_comfort"))) + 10) * 5;
+	setHr20AutoTemperature(3, temperature);
 	return 0;
 }
 
@@ -464,6 +490,8 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 	int view;
 	int modul[15], sensor[15], numGraphs;
 	unsigned int day, month, year;
+	gchar message[1024];
+	int error;
 	
 	numGraphs = getModuleSensorArrays(modul, sensor);
 #ifdef ENABLE_LIBHAGRAPH
@@ -487,22 +515,48 @@ G_MODULE_EXPORT void updateGraph(GtkWidget *widget, GdkEventExpose *event, gpoin
 		initGraph(&graph, from, to);
 		for(i=0; i< numGraphs; i++)
 		{
-			addGraphData(&graph, modul[i], sensor[i],
+			if(error = addGraphData(&graph, modul[i], sensor[i],
 				config.graph_host,
 				config.graph_user,
 				config.graph_password,
 				config.graph_database,
-				config.graph_database_ws2000);
+				config.graph_database_ws2000))
+			{
+				switch(error)
+				{
+					case -1: g_stpcpy(message,"could not draw graph: could not connect to database");
+							break;
+					case -2: g_stpcpy(message,"could not draw graph: empty dataset");
+							break;
+					default: g_sprintf(message,"could not draw graph: unknown error %d",error);
+							break;
+				}
+				ghac_error_dialog("mainWindow",message);
+				break;
+			}
 		}
-		drawGraphGtk(widget, &graph); 
-
-//		drawGraphPng("foo.png", &graph, 2000,800); 
 		yet_drawed = 1;
 
 	}
-	else
-		drawGraphGtk(widget, &graph);
+	
+	drawGraphGtk(widget, &graph); 
 #endif //ENABLE_LIBHAGRAPH
+}
+
+void ghac_error_dialog(const char *window, gchar *string)
+{
+	g_assert(window);
+	g_assert(string);
+
+	GtkWidget *error_dialog = gtk_message_dialog_new(
+		GTK_WINDOW(gtk_builder_get_object(builder,window)),
+		GTK_DIALOG_DESTROY_WITH_PARENT,
+		GTK_MESSAGE_ERROR,
+		GTK_BUTTONS_CLOSE,
+		"%s",
+		string);
+	gtk_dialog_run(GTK_DIALOG(error_dialog));
+	gtk_widget_destroy(error_dialog);
 }
 
 G_MODULE_EXPORT void save_graph(GtkWidget *widget, GData *data)
@@ -529,9 +583,7 @@ G_MODULE_EXPORT gboolean on_button_draw_clicked(GtkButton *button)
 	freeGraph(&graph);
 #endif
 	yet_drawed = 0;
-//	setDrawGraph();
 	gtk_widget_queue_draw(GTK_WIDGET(gtk_builder_get_object(builder,"drawingarea2")));
-	//updateGraph();
 	return 1;
 }
 
@@ -561,7 +613,6 @@ G_MODULE_EXPORT void on_button_config_set_clicked(GtkWidget *widget)
 	{
 		if(tempint)
 		{
-			initLibHac(config.had_ip, config.had_password);
 			if(config.had_control_activated)
 				gtk_widget_show(GTK_WIDGET(gtk_builder_get_object(builder,"hbox4")));
 			if(config.thermostat_activated)
@@ -573,6 +624,12 @@ G_MODULE_EXPORT void on_button_config_set_clicked(GtkWidget *widget)
 			gtk_widget_hide(GTK_WIDGET(gtk_builder_get_object(builder,"fixed2")));
 			closeLibHac();
 		}
+	}
+	if(config.had_activated)
+	{
+		closeLibHac();
+		ghac_initLibHac(config.had_ip, 
+			GTK_WINDOW(gtk_builder_get_object(builder,"mainWindow")));
 	}
 #endif
 	config.had_activated = tempint;
@@ -616,26 +673,6 @@ G_MODULE_EXPORT void trayIconClicked(GtkWidget *foo, gpointer data)
 	}
 }
 
-/*G_MODULE_EXPORT void on_drawingarea1_expose_event(GtkWidget *widget, GdkEventExpose *event, gpointer data)
-{
-	cairo_t *cr;
-
-	cr = gdk_cairo_create(widget->window);
-	cairo_set_source_rgb(cr, 0, 0, 0);
-	cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-	cairo_set_font_size(cr, 40.0);
-	cairo_move_to(cr, 10.0, 50.0);
-	cairo_show_text(cr, "elmo");
-	
-	cairo_set_source_rgb(cr, 0, 0, 50);
-	cairo_move_to(cr, 30.0, 50.0);
-	cairo_show_text(cr, "2k3");
-
-	cairo_destroy(cr);
-
-	return FALSE;
-}
-*/
 void trayIconPopup(GtkStatusIcon *status_icon, guint button, guint32 activate_time, gpointer popUpMenu)
 {
 	gtk_menu_popup(GTK_MENU(popUpMenu), NULL, NULL, gtk_status_icon_position_menu, status_icon, button, activate_time);
@@ -715,6 +752,7 @@ int main(int argc, char *argv[])
 	char *server_ip = getenv("HAD_HOST");
 	char *home = getenv("HOME");
 	char location[2048];
+	int error = 0;
 	sprintf(location,GHAC_CONFIG,home);
 	
 	loadConfig(location);
@@ -725,10 +763,7 @@ int main(int argc, char *argv[])
 	
 	time(&rawtime);
 	today = localtime(&rawtime);
-#ifdef ENABLE_LIBHAC
-	if(config.had_activated)
-		initLibHac(server_ip, config.had_password);
-#endif
+	
 	gtk_init(&argc, &argv);
 	builder = gtk_builder_new();
 #ifdef _WIN32
@@ -746,8 +781,13 @@ int main(int argc, char *argv[])
 #endif
 
 	widget = GTK_WIDGET(gtk_builder_get_object(builder, "mainWindow"));
-	errorPopup = gtk_builder_get_object(builder,"errorDialog");
 	
+#ifdef ENABLE_LIBHAC
+	if(config.had_activated)
+	{
+		ghac_initLibHac(server_ip, GTK_WINDOW(widget));
+	}
+#endif
 
 	g_signal_connect(widget, "delete-event",
 			G_CALLBACK(exit_handler), NULL);
@@ -779,6 +819,21 @@ int main(int argc, char *argv[])
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_version_libhac")), libhacVersion());
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_version_libhagraph")), libhagraphVersion());
 #ifdef ENABLE_LIBHAC
+	g_timeout_add(500, (GSourceFunc)ghacUpdater, NULL);
+#endif
+#ifdef ENABLE_LIBHAGRAPH
+	g_timeout_add_seconds(300, (GSourceFunc)on_button_draw_clicked, NULL);
+	memset(location,0,sizeof(location));
+//	getLastValueTable(location, config.graph_host, config.graph_user,
+//		config.graph_password, config.graph_database, config.graph_database_ws2000);
+//	gtk_status_icon_set_tooltip(trayIcon, location);
+#endif
+	gtk_main();
+	return 0;
+}
+
+static int ghacUpdater()
+{
 	updateThermostat();
 	updateRgb();
 	updateRelais();
@@ -791,14 +846,19 @@ int main(int argc, char *argv[])
 	g_timeout_add_seconds(10, (GSourceFunc)updateVoltage, NULL);
 	g_timeout_add_seconds(10, (GSourceFunc)updateTemperatures, NULL);
 	g_timeout_add_seconds(60, (GSourceFunc)updateThermostat, NULL);
-	g_timeout_add_seconds(300, (GSourceFunc)on_button_draw_clicked, NULL);
-#endif
-#ifdef ENABLE_LIBHAGRAPH
-	memset(location,0,sizeof(location));
-	getLastValueTable(location, config.graph_host, config.graph_user,
-		config.graph_password, config.graph_database, config.graph_database_ws2000);
-	gtk_status_icon_set_tooltip(trayIcon, location);
-#endif
-	gtk_main();
 	return 0;
+}
+
+static void ghac_initLibHac(char *server_ip, GtkWindow *parent)
+{
+	int error = 0;
+	gchar message[1024];
+	if(error = initLibHac(server_ip, config.had_password))
+	{
+		if(error == LIBHAC_WRONG_PASSWORD)
+			g_sprintf(message, "could not connect to had: wrong password");
+		else
+			g_sprintf(message, "could not connect to had: %s", g_strerror(error));
+		ghac_error_dialog("mainWindow",message);
+	}
 }

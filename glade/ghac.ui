@@ -1228,7 +1228,14 @@
                           <object class="GtkComboBox" id="combobox_temp_super_comfort">
                             <property name="width_request">100</property>
                             <property name="visible">True</property>
+                            <property name="model">liststore1</property>
                             <signal name="changed" handler="on_combobox_temp_super_comfort_changed"/>
+                            <child>
+                              <object class="GtkCellRendererText" id="cellrenderertext1"/>
+                              <attributes>
+                                <attribute name="text">0</attribute>
+                              </attributes>
+                            </child>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -1243,7 +1250,14 @@
                           <object class="GtkComboBox" id="combobox_temp_comfort">
                             <property name="width_request">100</property>
                             <property name="visible">True</property>
+                            <property name="model">liststore1</property>
                             <signal name="changed" handler="on_combobox_temp_comfort_changed"/>
+                            <child>
+                              <object class="GtkCellRendererText" id="cellrenderertext1"/>
+                              <attributes>
+                                <attribute name="text">0</attribute>
+                              </attributes>
+                            </child>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -1258,7 +1272,14 @@
                           <object class="GtkComboBox" id="combobox_temp_frost">
                             <property name="width_request">100</property>
                             <property name="visible">True</property>
+                            <property name="model">liststore1</property>
                             <signal name="changed" handler="on_combobox_temp_frost_changed"/>
+                            <child>
+                              <object class="GtkCellRendererText" id="cellrenderertext1"/>
+                              <attributes>
+                                <attribute name="text">0</attribute>
+                              </attributes>
+                            </child>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -1307,7 +1328,14 @@
                           <object class="GtkComboBox" id="combobox_temp_save">
                             <property name="width_request">100</property>
                             <property name="visible">True</property>
+                            <property name="model">liststore1</property>
                             <signal name="changed" handler="on_combobox_temp_save_changed"/>
+                            <child>
+                              <object class="GtkCellRendererText" id="cellrenderertext1"/>
+                              <attributes>
+                                <attribute name="text">0</attribute>
+                              </attributes>
+                            </child>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
