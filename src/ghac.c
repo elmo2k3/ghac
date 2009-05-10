@@ -824,9 +824,9 @@ int main(int argc, char *argv[])
 #ifdef ENABLE_LIBHAGRAPH
 	g_timeout_add_seconds(300, (GSourceFunc)on_button_draw_clicked, NULL);
 	memset(location,0,sizeof(location));
-//	getLastValueTable(location, config.graph_host, config.graph_user,
-//		config.graph_password, config.graph_database, config.graph_database_ws2000);
-//	gtk_status_icon_set_tooltip(trayIcon, location);
+	getLastValueTable(location, config.graph_host, config.graph_user,
+		config.graph_password, config.graph_database, config.graph_database_ws2000);
+	gtk_status_icon_set_tooltip(trayIcon, location);
 #endif
 	gtk_main();
 	return 0;
