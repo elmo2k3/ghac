@@ -328,7 +328,7 @@ G_MODULE_EXPORT void on_button_send_clicked(GtkWidget *widget)
 	
 	rgb_modul = 3;
 	smoothness = 5;
-
+	
 	setRgbValueModul(0x10, (int)gtk_range_get_value(GTK_RANGE(gtk_builder_get_object(builder,"vscale_red0"))),
 			(int)gtk_range_get_value(GTK_RANGE(gtk_builder_get_object(builder,"vscale_green0"))),
 			(int)gtk_range_get_value(GTK_RANGE(gtk_builder_get_object(builder,"vscale_blue0"))),
@@ -344,7 +344,6 @@ G_MODULE_EXPORT void on_button_send_clicked(GtkWidget *widget)
 			(int)gtk_range_get_value(GTK_RANGE(gtk_builder_get_object(builder,"vscale_blue2"))),
 			atoi(gtk_entry_get_text(GTK_ENTRY(gtk_builder_get_object(builder,"entry_smoothness"))))
 		    );
-
 }
 
 static gboolean updateRgb()
@@ -579,11 +578,14 @@ G_MODULE_EXPORT void save_graph(GtkWidget *widget, GData *data)
 
 G_MODULE_EXPORT gboolean on_button_draw_clicked(GtkButton *button)
 {
+	if(yet_drawed == 1)
+	{
 #ifdef ENABLE_LIBHAGRAPH
-	freeGraph(&graph);
+		freeGraph(&graph);
 #endif
-	yet_drawed = 0;
-	gtk_widget_queue_draw(GTK_WIDGET(gtk_builder_get_object(builder,"drawingarea2")));
+		yet_drawed = 0;
+		gtk_widget_queue_draw(GTK_WIDGET(gtk_builder_get_object(builder,"drawingarea2")));
+	}
 	return 1;
 }
 
@@ -818,6 +820,7 @@ int main(int argc, char *argv[])
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_version_ghac")), GHAC_VERSION);
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_version_libhac")), libhacVersion());
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_version_libhagraph")), libhagraphVersion());
+
 #ifdef ENABLE_LIBHAC
 	g_timeout_add(500, (GSourceFunc)ghacUpdater, NULL);
 #endif

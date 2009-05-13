@@ -34,11 +34,12 @@
                               <object class="GtkVScale" id="vscale_red0">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="update_policy">delayed</property>
                                 <property name="adjustment">adjustment15</property>
                                 <property name="inverted">True</property>
                                 <property name="digits">0</property>
                                 <property name="draw_value">False</property>
-                                <signal name="button_release_event" handler="on_button_send_clicked"/>
+                                <signal name="value_changed" handler="on_button_send_clicked"/>
                               </object>
                               <packing>
                                 <property name="position">0</property>
@@ -48,11 +49,12 @@
                               <object class="GtkVScale" id="vscale_green0">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="update_policy">delayed</property>
                                 <property name="adjustment">adjustment2</property>
                                 <property name="inverted">True</property>
                                 <property name="digits">0</property>
                                 <property name="draw_value">False</property>
-                                <signal name="button_release_event" handler="on_button_send_clicked"/>
+                                <signal name="value_changed" handler="on_button_send_clicked"/>
                               </object>
                               <packing>
                                 <property name="position">1</property>
@@ -62,11 +64,12 @@
                               <object class="GtkVScale" id="vscale_blue0">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="update_policy">delayed</property>
                                 <property name="adjustment">adjustment3</property>
                                 <property name="inverted">True</property>
                                 <property name="digits">0</property>
                                 <property name="draw_value">False</property>
-                                <signal name="button_release_event" handler="on_button_send_clicked"/>
+                                <signal name="value_changed" handler="on_button_send_clicked"/>
                               </object>
                               <packing>
                                 <property name="position">2</property>
@@ -84,11 +87,12 @@
                               <object class="GtkVScale" id="vscale_red1">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="update_policy">delayed</property>
                                 <property name="adjustment">adjustment4</property>
                                 <property name="inverted">True</property>
                                 <property name="digits">0</property>
                                 <property name="draw_value">False</property>
-                                <signal name="button_release_event" handler="on_button_send_clicked"/>
+                                <signal name="value_changed" handler="on_button_send_clicked"/>
                               </object>
                               <packing>
                                 <property name="position">0</property>
@@ -98,11 +102,12 @@
                               <object class="GtkVScale" id="vscale_green1">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="update_policy">delayed</property>
                                 <property name="adjustment">adjustment5</property>
                                 <property name="inverted">True</property>
                                 <property name="digits">0</property>
                                 <property name="draw_value">False</property>
-                                <signal name="button_release_event" handler="on_button_send_clicked"/>
+                                <signal name="value_changed" handler="on_button_send_clicked"/>
                               </object>
                               <packing>
                                 <property name="position">1</property>
@@ -112,11 +117,12 @@
                               <object class="GtkVScale" id="vscale_blue1">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="update_policy">delayed</property>
                                 <property name="adjustment">adjustment6</property>
                                 <property name="inverted">True</property>
                                 <property name="digits">0</property>
                                 <property name="draw_value">False</property>
-                                <signal name="button_release_event" handler="on_button_send_clicked"/>
+                                <signal name="value_changed" handler="on_button_send_clicked"/>
                               </object>
                               <packing>
                                 <property name="position">2</property>
@@ -135,11 +141,12 @@
                               <object class="GtkVScale" id="vscale_red2">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="update_policy">delayed</property>
                                 <property name="adjustment">adjustment7</property>
                                 <property name="inverted">True</property>
                                 <property name="digits">0</property>
                                 <property name="draw_value">False</property>
-                                <signal name="button_release_event" handler="on_button_send_clicked"/>
+                                <signal name="value_changed" handler="on_button_send_clicked"/>
                               </object>
                               <packing>
                                 <property name="position">0</property>
@@ -149,11 +156,12 @@
                               <object class="GtkVScale" id="vscale_green2">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="update_policy">delayed</property>
                                 <property name="adjustment">adjustment8</property>
                                 <property name="inverted">True</property>
                                 <property name="digits">0</property>
                                 <property name="draw_value">False</property>
-                                <signal name="button_release_event" handler="on_button_send_clicked"/>
+                                <signal name="value_changed" handler="on_button_send_clicked"/>
                               </object>
                               <packing>
                                 <property name="position">1</property>
@@ -163,11 +171,12 @@
                               <object class="GtkVScale" id="vscale_blue2">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="update_policy">delayed</property>
                                 <property name="adjustment">adjustment9</property>
                                 <property name="inverted">True</property>
                                 <property name="digits">0</property>
                                 <property name="draw_value">False</property>
-                                <signal name="button_release_event" handler="on_button_send_clicked"/>
+                                <signal name="value_changed" handler="on_button_send_clicked"/>
                               </object>
                               <packing>
                                 <property name="position">2</property>
@@ -1231,7 +1240,7 @@
                             <property name="model">liststore1</property>
                             <signal name="changed" handler="on_combobox_temp_super_comfort_changed"/>
                             <child>
-                              <object class="GtkCellRendererText" id="cellrenderertext1"/>
+                              <object class="GtkCellRendererText" id="cellrenderertext3"/>
                               <attributes>
                                 <attribute name="text">0</attribute>
                               </attributes>
@@ -1253,7 +1262,7 @@
                             <property name="model">liststore1</property>
                             <signal name="changed" handler="on_combobox_temp_comfort_changed"/>
                             <child>
-                              <object class="GtkCellRendererText" id="cellrenderertext1"/>
+                              <object class="GtkCellRendererText" id="cellrenderertext4"/>
                               <attributes>
                                 <attribute name="text">0</attribute>
                               </attributes>
@@ -1275,7 +1284,7 @@
                             <property name="model">liststore1</property>
                             <signal name="changed" handler="on_combobox_temp_frost_changed"/>
                             <child>
-                              <object class="GtkCellRendererText" id="cellrenderertext1"/>
+                              <object class="GtkCellRendererText" id="cellrenderertext5"/>
                               <attributes>
                                 <attribute name="text">0</attribute>
                               </attributes>
@@ -1331,7 +1340,7 @@
                             <property name="model">liststore1</property>
                             <signal name="changed" handler="on_combobox_temp_save_changed"/>
                             <child>
-                              <object class="GtkCellRendererText" id="cellrenderertext1"/>
+                              <object class="GtkCellRendererText" id="cellrenderertext6"/>
                               <attributes>
                                 <attribute name="text">0</attribute>
                               </attributes>
