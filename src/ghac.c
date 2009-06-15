@@ -103,7 +103,7 @@ static gboolean updateTemperatures()
 	return 1;
 }
 
-static gboolean updateThermostat()
+G_MODULE_EXPORT void updateThermostat()
 {
 	int16_t tempis, tempset, voltage;
 	int8_t valve, mode;
@@ -134,13 +134,10 @@ static gboolean updateThermostat()
 	sprintf(label_buffer,"%1.3fV", (float)hr20info.voltage/1000.0);
 	gtk_label_set_text(GTK_LABEL(gtk_builder_get_object(builder,"label_bat")), label_buffer);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_mode")),(gint)hr20info.mode-1);
-	return 1;
 }
 
 G_MODULE_EXPORT gint thermostat_set_mode(GtkWidget *widget)
 {
-	gint mode = (gint)(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_mode"))))+1;
-	setHr20Mode((int)mode);
 	return 0;
 }
 
@@ -148,42 +145,27 @@ G_MODULE_EXPORT gint thermostat_set_temperature(GtkWidget *widget)
 {
 	int16_t temperature;
 
-	temperature = (int16_t)(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_temperature"))) + 10) * 5;
-
-
-	setHr20Temperature(temperature);
 	return 0;
 }
 
-G_MODULE_EXPORT gint on_combobox_temp_save_changed(GtkWidget *widget)
+G_MODULE_EXPORT gint on_button_temp_set_clicked(GtkWidget *widget)
 {
 	int16_t temperature;
+	gint mode;
+
 	temperature = (int16_t)(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_temp_save"))) + 10) * 5;
 	setHr20AutoTemperature(1, temperature);
-	return 0;
-}
-
-G_MODULE_EXPORT gint on_combobox_temp_frost_changed(GtkWidget *widget)
-{
-	int16_t temperature;
 	temperature = (int16_t)(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_temp_frost"))) + 10) * 5;
 	setHr20AutoTemperature(0, temperature);
-	return 0;
-}
-
-G_MODULE_EXPORT gint on_combobox_temp_comfort_changed(GtkWidget *widget)
-{
-	int16_t temperature;
 	temperature = (int16_t)(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_temp_comfort"))) + 10) * 5;
 	setHr20AutoTemperature(2, temperature);
-	return 0;
-}
-
-G_MODULE_EXPORT gint on_combobox_temp_super_comfort_changed(GtkWidget *widget)
-{
-	int16_t temperature;
 	temperature = (int16_t)(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_temp_super_comfort"))) + 10) * 5;
 	setHr20AutoTemperature(3, temperature);
+	
+	mode = (gint)(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_mode"))))+1;
+	temperature = (int16_t)(gtk_combo_box_get_active(GTK_COMBO_BOX(gtk_builder_get_object(builder,"combobox_temperature"))) + 10) * 5;
+	setHr20Temperature(temperature);
+	setHr20Mode((int)mode);
 	return 0;
 }
 
