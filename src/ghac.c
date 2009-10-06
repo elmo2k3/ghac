@@ -223,6 +223,14 @@ static gboolean updateModules()
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"scrobbler_button")), 1);
 	else
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"scrobbler_button")), 0);
+	if(getDoorBeepState())
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"beep_on_door_button")), 1);
+	else
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"beep_on_door_button")), 0);
+	if(getWindowBeepState())
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"beep_on_window_left_open_button")), 1);
+	else
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder,"beep_on_window_left_open_button")), 0);
 	return 1;
 }
 
@@ -240,6 +248,22 @@ G_MODULE_EXPORT void on_scrobbler_toggled(GtkToggleButton *toggle_button)
 		setScrobblerOn();
 	else
 		setScrobblerOff();
+}
+
+G_MODULE_EXPORT void on_door_opened_button_toggled(GtkToggleButton *toggle_button)
+{
+	if(gtk_toggle_button_get_active(toggle_button))
+		setDoorBeepOn();
+	else
+		setDoorBeepOff();
+}
+
+G_MODULE_EXPORT void on_window_left_open_button_toggled(GtkToggleButton *toggle_button)
+{
+	if(gtk_toggle_button_get_active(toggle_button))
+		setWindowBeepOn();
+	else
+		setWindowBeepOff();
 }
 
 

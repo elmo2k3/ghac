@@ -240,6 +240,7 @@
             <child>
               <object class="GtkVBox" id="vbox9">
                 <property name="visible">True</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkFrame" id="frame2">
                     <property name="visible">True</property>
@@ -344,6 +345,7 @@
                             <child>
                               <object class="GtkVBox" id="vbox10">
                                 <property name="visible">True</property>
+                                <property name="orientation">vertical</property>
                                 <child>
                                   <object class="GtkCheckButton" id="ledmatrix_button">
                                     <property name="label" translatable="yes">Ledmatrix</property>
@@ -368,6 +370,32 @@
                                   </object>
                                   <packing>
                                     <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="beep_on_door_button">
+                                    <property name="label" translatable="yes">Beep on door opening</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="on_door_opened_button_toggled"/>
+                                  </object>
+                                  <packing>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="beep_on_window_left_open_button">
+                                    <property name="label" translatable="yes">Beep on window left open</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="on_window_left_open_button_toggled"/>
+                                  </object>
+                                  <packing>
+                                    <property name="position">3</property>
                                   </packing>
                                 </child>
                               </object>
@@ -405,6 +433,7 @@
                     <child>
                       <object class="GtkVBox" id="vbox1">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkCheckButton" id="relaisbutton1">
                             <property name="label" translatable="yes">Laserdrucker</property>
